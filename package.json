@@ -1,0 +1,17 @@
+{
+  "name": "principal",
+  "version": "1.0.0",
+  "description": "Used to find a student by his/her Kawach ID",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Victor Baron",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "mongodb": "^6.8.0",
+    "mongoose": "^8.5.4"
+  }
+}
