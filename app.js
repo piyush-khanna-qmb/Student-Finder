@@ -5,7 +5,7 @@ const express= require('express')
 const bodyParser= require('body-parser')
 const mongoose= require('mongoose')
 const app= express()
-const port =  process.env.PORT|| 3000;
+const port =  process.env.PORT|| 8080;
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.urlencoded({ extended: true }));
@@ -88,7 +88,7 @@ app.post('/coordinates', async (req, res) => {
 });
 
 app.get("/", function (req, res) {
-    res.render("index.ejs");
+    res.render("index2.ejs");
 })
 
 app.listen(port, function() {
