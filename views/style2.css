@@ -227,7 +227,7 @@ button:hover {
         text-align: center;
     }
     .container {
-        width: max-content;
+        /* width: max-content; */
         z-index: 1;
         background: transparent;
         border-radius: 30px; 
