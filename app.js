@@ -79,7 +79,7 @@ app.post('/coordinates', async (req, res) => {
         if (sortedData.length > 0) {
             const { latitude, longitude } = sortedData[0];
             console.log('Returning data:', { latitude, longitude });
-            res.json({ latitude, longitude });
+            return res.json({ lat: latitude, lng: longitude });
         } else {
             res.status(404).json({ error: 'No data found' });
         }
@@ -91,7 +91,7 @@ app.post('/coordinates', async (req, res) => {
 
 // app.use("/api/v1/data", router);
 
-app.get("/api/v1/ifUserExists", async function (req, res) {
+app.post("/api/v1/ifUserExists", async function (req, res) {
     const kaw= req.body.KawachID;
     const im= req.body.IMEI;
     
@@ -105,7 +105,7 @@ app.get("/api/v1/ifUserExists", async function (req, res) {
             return res.status(401).json({ error: 'Authentication failed: KawachId and IMEI code do not match', success: false});
         }
     } catch (err){
-        return res.status(401).json({ error: 'Authentication failed: KawachId and IMEI code do not match', success: false});
+        return res.status(404).json({error: 'User not found', success: false});
     }
 })
 
@@ -119,7 +119,7 @@ function isActive(timestamp) {
     return differenceInHours < 3;
 }
 
-app.get("/api/v1/getStaticData", async function (req, res) {
+app.post("/api/v1/getStaticData", async function (req, res) {
     const kaw= req.body.KawachID;
     const im= req.body.IMEI;
     
@@ -149,7 +149,7 @@ app.get("/api/v1/getStaticData", async function (req, res) {
     }
 })
 
-app.get("/api/v1/getMarkerData", async function (req, res) {
+app.post("/api/v1/getMarkerData", async function (req, res) {
     const kaw= req.body.KawachID;
     const im= req.body.IMEI;
     

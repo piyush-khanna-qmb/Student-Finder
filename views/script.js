@@ -1,6 +1,6 @@
 window.onload = initMap;
 
-let map;
+var map;
 let marker;
 // let imei = []; // IMEI to be fetched from input field
 var imeiList= [];
@@ -35,7 +35,7 @@ function updateMap(lat, lng, bounds) {
             map: map,
             title: `IMEI: ${location.imei}`  // Optional: Title when hovering over the marker
         });
-        bounds.extend(position);
+        bounds.extend(marker.position);
     } else {
         console.error("Invalid latitude or longitude values.");
     }
@@ -45,8 +45,8 @@ function fetchCoordinates() {
     if (imeiList) {
         const bounds = new google.maps.LatLngBounds();
 
-        imeiList.forEach(imei => {
-            fetch('/coordinates', {
+        imeiList.forEach(async imei => {
+            await fetch('/coordinates', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -57,19 +57,23 @@ function fetchCoordinates() {
             .then(data => {
                 console.log("Data: ", data);
                 
-                if (data.latitude && data.longitude) {
-                    updateMap(data.latitude, data.longitude);
+                if (data.lat && data.lng) {
+                    var marker = new google.maps.Marker({
+                        position: data,
+                        map: map,
+                        title: `IMEI: ${data.lat}`  // Optional: Title when hovering over the marker
+                    });
+                    bounds.extend(data);
                 } else {
                     console.error("No coordinates data received.");
-                }
-                if (imeiList.indexOf(imei) === imeiList.length - 1) {
-                    map.fitBounds(bounds);  // Auto-adjusts the map to fit all markers
                 }
             })
             .catch(error => {
                 console.error('Error fetching coordinates:', error);
             });
         });
+        
+        map.fitBounds(bounds); 
     }
 }
 
@@ -77,18 +81,6 @@ function startPolling() {
     // Poll the server every 5 seconds
     setInterval(fetchCoordinates, 5000);
 }
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     initMap();
-
-//     // Setup event listeners for form submission
-//     document.getElementById('updateMap').addEventListener('click', (event) => {
-//         event.preventDefault(); // Prevent default form submission
-//         imei = document.getElementById('imei').value;
-//         fetchCoordinates();
-//         startPolling(); // Start polling after setting IMEI
-//     });
-// });
 
 document.addEventListener('DOMContentLoaded', () => {
     initMap();
