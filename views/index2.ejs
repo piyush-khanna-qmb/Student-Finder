@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="views/style2.css">
     <link rel="icon" href="views/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="views/favicon.png" type="image/x-icon">
+    <script src="https://kit.fontawesome.com/bfc55d4923.js" crossorigin="anonymous"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmtUpLbdzsCVSlZ9hoh14OLjTUoAJHdts"></script>
 </head>
 <body>
@@ -21,11 +22,17 @@
             <div class="input-column">
                 <form action="../student" method="post">
                     <h2>T r a c k i n g . . .</h2>
-                    <!-- <label for="kawach">K a w a c h &nbsp; I D:</label> -->
-                    <input type="text" id="imei" name="imei" placeholder="M y K a w a c h &nbsp; I D">
+                    <div class="page">
+                        <div class="content group">
+                            <div id="list">
+                                <label for="data_100"></label>
+                                <input type="text" id="data_100" name="imei" placeholder="M y K a w a c h &nbsp; I D">
+                            </div>
+                        </div>
+                    </div>
                     <button id="updateMap" type="submit">S t a r t</button>
                 </form>
-                <button type="button" id="addFieldButton" onclick="addInputField()">+</button>
+                <button type="button" id="addFieldButton">+</button>
             </div>
         </div>
         

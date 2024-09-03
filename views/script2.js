@@ -29,10 +29,12 @@ function updateMap(lat, lng, bounds) {
     console.log("Recieevd", lat, lng);
     if (!isNaN(lat) && !isNaN(lng)) {
         const position = { lat: lat, lng: lng };
+        // map.setCenter(position);
+        // marker.setPosition(position);
         var marker = new google.maps.Marker({
             position: position,
             map: map,
-            title: `IMEI: ${location.imei}` 
+            title: `IMEI: ${location.imei}`  // Optional: Title when hovering over the marker
         });
         bounds.extend(marker.position);
     } else {
@@ -42,7 +44,9 @@ function updateMap(lat, lng, bounds) {
 
 function fetchCoordinates() {
     if (imeiList) {
-        const bounds = new google.maps.LatLngBounds();  
+        const bounds = new google.maps.LatLngBounds();  // Initialize bounds
+
+        // Create an array of promises for each fetch call
         const fetchPromises = imeiList.map(imei => {
             return fetch('/coordinates', {
                 method: 'POST',
@@ -53,7 +57,7 @@ function fetchCoordinates() {
             })
             .then(response => response.json())
             .then(data => {
-                // console.log("Data: ", data);
+                console.log("Data: ", data);
 
                 if (data.lat && data.lng) {
                     const position = { lat: data.lat, lng: data.lng };
@@ -61,10 +65,10 @@ function fetchCoordinates() {
                     var marker = new google.maps.Marker({
                         position: position,
                         map: map,
-                        title: `IMEI: ${data.lat}`  
+                        title: `IMEI: ${data.lat}`  // Optional: Title when hovering over the marker
                     });
 
-                    bounds.extend(position);  
+                    bounds.extend(position);  // Add marker position to bounds
                 } else {
                     console.error("No coordinates data received.");
                 }
@@ -74,7 +78,9 @@ function fetchCoordinates() {
             });
         });
 
+        // Wait for all fetch calls to complete
         Promise.all(fetchPromises).then(() => {
+            // Now that all markers have been added, fit the bounds
             map.fitBounds(bounds);
         });
     }
@@ -102,57 +108,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         const data = JSON.stringify({ imeiList });
-        // console.log(data);
+        console.log(data);
         resetMap();
-        if(imeiList.length > 0)
-            fetchCoordinates();
-        else
-            initMap();
-        
+        fetchCoordinates();
         // startPolling();
     });
 });
 
-var addRow = document.getElementById('addFieldButton');
+function addInputField()
+{
+    console.log("Add button clicked");
+    const form = document.querySelector('.input-column form');
 
-addRow.addEventListener('click', () => {
+    // Create a new input element
+    const newInput = document.createElement('input');
+    newInput.type = 'text';
+    newInput.name = 'imei'; // Adjust the name attribute as needed
+    newInput.placeholder = 'M y K a w a c h  I D';
 
-	// Create Data ID
-	dataID = Math.round(Math.random()*(999999-100000)+100000);
-		
-	// Create Row
-	row = document.createElement('div');
-	document.getElementById('list').append(row);
-	row.setAttribute('class', 'extended');
+    const submitButton = document.getElementById('updateMap');
 
-	// Create Label
-	label = document.createElement('label');
-	row.append(label);
-	label.setAttribute('for', "data_" + dataID);
-
-	// Create Input Field
-	input = document.createElement('input');
-	row.append(input);
-	input.setAttribute('type','text');
-	input.setAttribute('placeholder','M y K a w a c h   I D');
-	input.setAttribute('id', "data_" + dataID);
-	input.setAttribute('name', "imei");
-
-	// Create Delete Button
-	deleteBtn = document.createElement('button');
-	row.append(deleteBtn);
-	deleteBtn.setAttribute('class','delete');
-    deleteBtn.innerHTML = '<i class="fa-solid fa-xmark fa-l"></i>'; 
-});
-
-var list = document.getElementById('list');
-
-list.addEventListener('click', (event) => {
-    const deleteBtn = event.target.closest('button.delete');
-
-    // Check if a button with class 'delete' was clicked or the <i> element within it
-    if (deleteBtn) {
-        const deleteRow = deleteBtn.parentNode; // Find the parent row (div) of the button
-        deleteRow.remove(); // Remove the row from the DOM
-    }
-});
+    form.insertBefore(newInput, submitButton);
+}
