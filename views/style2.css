@@ -53,19 +53,24 @@ body {
     justify-content: center; 
 }
 
+.input-list {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
 .input-column {
     width: max-content;
     height:max-content;
     
     padding: 20px;
-    margin-top: 13.5%;
     box-sizing: border-box;
     border-radius: 30px;
     z-index: 3;
     text-align: center;
     color: white;
-    text-align: left;
-    
+    margin-right: 4rem;
 }
 
 .input-column h2 {
@@ -84,7 +89,8 @@ body {
 }
 
 .input-column input {
-    width: calc(90% - 22px);
+    /* width: calc(90% - 22px); */
+    width: 20rem;
     margin: 5px 0;
     box-sizing: border-box;
     background: #303b5ad6;
@@ -95,26 +101,33 @@ body {
     font-size: 16px;
     padding: 15px;
     text-align: left;
-    display: inline-block;
+    display: block;
 }
 
 input::placeholder {
     color: rgb(199, 193, 193);
-    opacity: 1; /* Adjust opacity if needed */
+    opacity: 1; 
     font-family: Lastica;
     font-size: x-small;
 }
 
 .input-column button {
-    background: #ff4800;
     border: none;
     border-radius: 25px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    color: white;
-    font-size: 16px;
-    padding: 10px 20px;
-    cursor: pointer;
     display: inline-block;
+    background-color: #EA4335; /* Normal button color */
+    color: white; /* Text color */
+    margin-top: 20px;
+    padding: 12px 24px; /* Padding for size */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition */
+    text-align: center;
+    /* width: calc(90% - 22px); */
+    width: 20rem;
+    font-size: 16px; /* Font size */
+    font-family: Lastica;
+    font-weight: bold;
 }
 
 .map-column {
@@ -129,25 +142,15 @@ input::placeholder {
     border-radius: 30px;
 }
 
-button {
-    background-color: #EA4335; /* Normal button color */
-    color: white; /* Text color */
-    border: none;
-    margin-top: 20px;
-    border-radius: 12px; /* Rounded corners */
-    padding: 12px 24px; /* Padding for size */
-    font-size: 16px; /* Font size */
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition */
-    text-align: center;
-    width: calc(90% - 22px);
-    font-family: Lastica;
-    font-weight: bold;
-}
-
 button:hover {
     background-color: #B41412; /* Hover background color */
     transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+#addFieldButton {
+    width: max-content;
+    text-align: right;
+    display: block;
 }
 
 /* @media (max-width: 980px) 
@@ -227,12 +230,15 @@ button:hover {
         text-align: center;
     }
     .container {
-        /* width: max-content; */
         z-index: 1;
         background: transparent;
         border-radius: 30px; 
         display: block;
         text-align: center;
+    }
+
+    .input-list {
+        margin-top: 0;
     }
 
     .input-column {
@@ -271,7 +277,6 @@ button:hover {
     }
 
     .input-column input {
-        /* width: calc(90% - 22px); */
         margin: 5px 0;
         box-sizing: border-box;
         background: #303b5ad6;
@@ -283,7 +288,10 @@ button:hover {
         padding: 15px;
         text-align: left;
         display: inline-block;
+        width: calc(90% - 22px);
     }
-
     
+    .input-column button {
+        width: calc(90% - 22px);
+    }
 }
