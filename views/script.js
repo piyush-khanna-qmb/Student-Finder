@@ -13,7 +13,8 @@ function initMap() {
     });
     marker = new google.maps.Marker({
         position: { lat: 28.6158816212149, lng: 77.3748894152614 },
-        map: map
+        map: map,
+        title: `ManoJava Software Pvt. Ltd.`
     });
 }
 
@@ -41,12 +42,49 @@ function updateMap(lat, lng, bounds) {
     }
 }
 
+// function fetchCoordinates() {
+//     if (imeiList) {
+//         const bounds = new google.maps.LatLngBounds();
+
+//         imeiList.forEach(async imei => {
+//             await fetch('/coordinates', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json'
+//                 },
+//                 body: JSON.stringify({ imei: imei })
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 console.log("Data: ", data);
+                
+//                 if (data.lat && data.lng) {
+//                     var marker = new google.maps.Marker({
+//                         position: data,
+//                         map: map,
+//                         title: `IMEI: ${data.lat}`  // Optional: Title when hovering over the marker
+//                     });
+//                     bounds.extend(data);
+//                 } else {
+//                     console.error("No coordinates data received.");
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error('Error fetching coordinates:', error);
+//             });
+//         });
+        
+//         map.fitBounds(bounds); 
+//     }
+// }
+
 function fetchCoordinates() {
     if (imeiList) {
-        const bounds = new google.maps.LatLngBounds();
+        const bounds = new google.maps.LatLngBounds();  // Initialize bounds
 
-        imeiList.forEach(async imei => {
-            await fetch('/coordinates', {
+        // Create an array of promises for each fetch call
+        const fetchPromises = imeiList.map(imei => {
+            return fetch('/coordinates', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -56,14 +94,17 @@ function fetchCoordinates() {
             .then(response => response.json())
             .then(data => {
                 console.log("Data: ", data);
-                
+
                 if (data.lat && data.lng) {
+                    const position = { lat: data.lat, lng: data.lng };
+                    
                     var marker = new google.maps.Marker({
-                        position: data,
+                        position: position,
                         map: map,
                         title: `IMEI: ${data.lat}`  // Optional: Title when hovering over the marker
                     });
-                    bounds.extend(data);
+
+                    bounds.extend(position);  // Add marker position to bounds
                 } else {
                     console.error("No coordinates data received.");
                 }
@@ -72,8 +113,12 @@ function fetchCoordinates() {
                 console.error('Error fetching coordinates:', error);
             });
         });
-        
-        map.fitBounds(bounds); 
+
+        // Wait for all fetch calls to complete
+        Promise.all(fetchPromises).then(() => {
+            // Now that all markers have been added, fit the bounds
+            map.fitBounds(bounds);
+        });
     }
 }
 
