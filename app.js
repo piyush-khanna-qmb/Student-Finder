@@ -3,7 +3,8 @@ require('dotenv').config();
 const ejs = require("ejs")
 const express= require('express')
 const bodyParser= require('body-parser')
-const mongoose= require('mongoose')
+const mongoose= require('mongoose');
+// const {router} = require('./routes/dataRoutes');
 const app= express()
 const port =  process.env.PORT|| 8080;
 
@@ -88,6 +89,8 @@ app.post('/coordinates', async (req, res) => {
     }
 });
 
+// app.use("/api/v1/data", router);
+
 app.get("/api/v1/ifUserExists", async function (req, res) {
     const kaw= req.body.KawachID;
     const im= req.body.IMEI;
@@ -165,7 +168,8 @@ app.get("/api/v1/getMarkerData", async function (req, res) {
                 longitude: latestLongitude,
                 battery: latestBattery,
                 speed: latestSpeed,
-                signalStrength: latestSignalStrength
+                signalStrength: latestSignalStrength,
+                success: true
             };
             return res.json(response);
         }
