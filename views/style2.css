@@ -322,12 +322,12 @@ button:hover {
         padding: 15px;
         text-align: left;
         display: inline;
-        width: calc(90% - 22px);
+        width: 90%;
     }
     
     .input-column button {
-        width: calc(90% - 22px);
         margin: 2rem auto;
+        width: 90%;
     }
 
     #addFieldButton {
@@ -344,7 +344,7 @@ button:hover {
     }
     
     .extended input {
-        width: calc(83% - 22px);
+        width: 70%;
         display: inline;
         margin-top: 0;
         border-top-right-radius: 0;
@@ -352,7 +352,7 @@ button:hover {
     }
     
     .extended button {
-        width: 3rem;
+        width: 20%;
         display: inline;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
