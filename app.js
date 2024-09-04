@@ -7,6 +7,7 @@ const mongoose= require('mongoose');
 // const {router} = require('./routes/dataRoutes');
 const app= express()
 const port =  process.env.PORT|| 8080;
+const API_KEY= process.env.API_KEY;
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.urlencoded({ extended: true }));
@@ -225,7 +226,7 @@ app.post("/api/v1/createUser", async function (req, res) {
 //#endregion
 
 app.get("/", function (req, res) {
-    res.render("index2.ejs");
+    res.render("index2.ejs", {API_KEY: API_KEY});
 })
 
 app.listen(port, function() {
