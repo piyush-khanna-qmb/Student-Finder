@@ -12,9 +12,9 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set('view engine', 'ejs')
-// app.use(express.static(__dirname + '/views/public'));
 app.use(express.static(__dirname + '/'));
 
+// #region DATABASE
 mongoose
 .connect("mongodb+srv://piyush:piyushStudent@kawachtest.kglue.mongodb.net/deviceDB?retryWrites=true&w=majority&appName=KawachTest")
 .then(async () => {
@@ -40,19 +40,21 @@ const userSchema = new mongoose.Schema({
 }, { collection: 'user' });
 
 const User = mongoose.model('User', userSchema);
+//#endregion
 
-async function main() {
-    const userEnt= "Teresa69Test"
+// #region HELPER FUNCTIONS
+function isActive(timestamp) {
+    const givenTime = new Date(timestamp);
+    const currentTime = new Date();
 
-    const user= await User.findOne({kawachId: userEnt})
-    if(user) {
-        console.log(user.imei, user.accountDob, user.last50kData);
-    }
+    const differenceInMilliseconds = Math.abs(currentTime - givenTime);
+    const differenceInHours = differenceInMilliseconds / (1000 * 60 * 60);
+
+    return differenceInHours < 3;
 }
+//#endregion
 
-var lat= 0.0, long= 0.0;
-var currUser= null;
-
+// #region APIs
 app.post("/student", async function (req, res) {
     const kaw= req.body.kawach;
     const im= req.body.imei;
@@ -108,16 +110,6 @@ app.post("/api/v1/ifUserExists", async function (req, res) {
         return res.status(404).json({error: 'User not found', success: false});
     }
 })
-
-function isActive(timestamp) {
-    const givenTime = new Date(timestamp);
-    const currentTime = new Date();
-
-    const differenceInMilliseconds = Math.abs(currentTime - givenTime);
-    const differenceInHours = differenceInMilliseconds / (1000 * 60 * 60);
-
-    return differenceInHours < 3;
-}
 
 app.post("/api/v1/getStaticData", async function (req, res) {
     const kaw= req.body.KawachID;
@@ -180,6 +172,24 @@ app.post("/api/v1/getMarkerData", async function (req, res) {
         return res.status(404).json({error: 'User not found', success: false});
     }
 })
+
+app.post("/api/v1/getPhoneNumber", function (req, res) {
+    const kaw= req.body.KawachID;
+    let phoneDict= {
+        "test101": "+918755122371",
+        "test102": "+918755916729",
+        "test103": "+918586827629",
+        "test104": "+919457138020",
+        "test105": "+919760775209"
+    }
+    if(kaw in phoneDict) {
+        return res.status(200).json({num: phoneDict[kaw], success: true});
+    } else {
+        return res.status(404).json({error: "KawachID not present in phone dictionary", success: false});
+    }
+})
+
+//#endregion
 
 app.get("/", function (req, res) {
     res.render("index2.ejs");
