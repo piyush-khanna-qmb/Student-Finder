@@ -1,19 +1,16 @@
-function isWithinThreeHours(timestamp) {
-    // Parse the given timestamp to a Date object
-    const givenTime = new Date(timestamp);
+function getCreationTime() {
+    const date = new Date();
 
-    // Get the current machine time
-    const currentTime = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
 
-    // Calculate the difference in milliseconds
-    const differenceInMilliseconds = Math.abs(currentTime - givenTime);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
 
-    // Convert milliseconds to hours
-    const differenceInHours = differenceInMilliseconds / (1000 * 60 * 60);
-
-    // Check if the difference is less than 3 hours
-    return differenceInHours < 3;
+    const formattedDateTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+    return formattedDateTime;
 }
 
-// Example usage
-console.log(isWithinThreeHours("2024/09/03 06:17:24")); 
+console.log(getCreationTime());

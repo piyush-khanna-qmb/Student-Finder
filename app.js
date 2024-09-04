@@ -52,6 +52,17 @@ function isActive(timestamp) {
 
     return differenceInHours < 3;
 }
+
+function getCreationTime() {
+    const date = new Date();
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+
+    const formattedDateTime = `${year}/${month}/${day}`;
+    return formattedDateTime;
+}
 //#endregion
 
 // #region APIs
@@ -183,9 +194,31 @@ app.post("/api/v1/getPhoneNumber", function (req, res) {
         "test105": "+919760775209"
     }
     if(kaw in phoneDict) {
-        return res.status(200).json({num: phoneDict[kaw], success: true});
+        return res.status(200).json({mobile_number: phoneDict[kaw], success: true});
     } else {
         return res.status(404).json({error: "KawachID not present in phone dictionary", success: false});
+    }
+})
+
+app.post("/api/v1/createUser", async function (req, res) {
+    const kaw= req.body.KawachID;
+    const im= req.body.IMEI;
+    const dob= getCreationTime();
+
+    const newUser = new User({
+        imei: im,
+        kawachId: kaw,
+        accountDob: dob,
+        last50kData: []  
+    });
+
+    try {
+        const savedUser = await newUser.save();
+        console.log('New user added:', savedUser);
+        return res.status(201).json({msg: "New user added to DB successfully!", success: true});
+    } catch (error) {
+        console.error('Error adding new user:', error);
+        return res.status(500).json({error: "User couldn't be saved to DB due to internal connection error", success: false});
     }
 })
 
