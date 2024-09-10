@@ -13,4 +13,5 @@ function getCreationTime() {
     return formattedDateTime;
 }
 
-console.log(getCreationTime());
+const timing= getCreationTime();
+console.log(timing);

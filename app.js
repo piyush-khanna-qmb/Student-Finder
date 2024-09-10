@@ -229,6 +229,10 @@ app.get("/", function (req, res) {
     res.render("index2.ejs", {API_KEY: API_KEY});
 })
 
+app.get("/highAlert", function (req, res) {
+    res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: 123})
+})
+
 app.listen(port, function() {
     console.log("Server listening on port:", port);
 })

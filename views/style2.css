@@ -143,6 +143,7 @@ input::placeholder {
     width: 61%;
     border-radius: 30px; /* Rounded corners */
     box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);  
+    opacity: 0.9;
 }
 
 #map {
