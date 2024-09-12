@@ -4,11 +4,57 @@ var imeiList= [];
 var boundingCircle;
 let currentInfoWindow = null;
 let currentMarker = null;
+currentInfoBut= null;
 
 var markerDataList = [
-    { kawachID: 'Doraemon Goswami', position: { lat: 28.600000, lng: 77.255000 } },
-    { kawachID: 'Bhoot', position: { lat: 28.620000, lng: 77.330000 } },
-    { kawachID: 'Shaktimaan Upadhyaay', position: { lat: 28.610000, lng: 77.260000 } },
+    { 
+        kawachID: 'STA00101', 
+        position: { lat: 28.600000, lng: 77.255000 },
+        name: "Piyush Khanna",
+        class: "8B",
+        roll: 38,
+        fatherName: "Mukesh Khanna",
+        fatherContact: "+91 7669956656",
+        motherName: "Pooja Khanna",
+        motherContact: "+91 95489445863",
+        address: "D-1, Gali no. 4, Gurunanakpura, Modinagar, Ghaziabad"
+    },
+    { 
+        kawachID: 'STA00102', 
+        position: { lat: 29.600000, lng: 77.255000 },
+        name: "Arjun Gaur",
+        class: "8B",
+        roll: 38,
+        fatherName: "Amit Gaur",
+        fatherContact: "+91 7669956656",
+        motherName: "Sonia Gaur",
+        motherContact: "+91 95489445863",
+        address: "C-111, Gurunanakpura, Modinagar, Ghaziabad"
+    },
+    { 
+        kawachID: 'STA00103', 
+        position: { lat: 28.800000, lng: 77.255000 },
+        name: "Anant Aggarwal",
+        class: "8B",
+        roll: 38,
+        fatherName: "Lala aggarwal",
+        fatherContact: "+91 7669956656",
+        motherName: "aunty aggarwal",
+        motherContact: "+91 95489445863",
+        address: "D-1, Gali no. 4, gurunanakpura, Modinagar, Ghaziabad"
+    },
+    { 
+        kawachID: 'STA00104', 
+        position: { lat: 28.600000, lng: 77.455000 },
+        name: "Sunny Shamra",
+        class: "8B",
+        roll: 38,
+        fatherName: "Set Sharma",
+        fatherContact: "+91 7669956656",
+        motherName: "Indu Sharma",
+        motherContact: "+91 95489445863",
+        address: "D-1, Gali no. 4, gurunanakpura, Modinagar, Ghaziabad"
+    },
 ];
 
 
@@ -254,7 +300,7 @@ async function initMap() {
     map = await new google.maps.Map(document.getElementById("map"), {
         zoom: 10,
         center: { lat: 28.6158816212149, lng: 77.3748894152614 },
-        // styles: hackeryGreenStyle
+        styles: nightStyle
     });
     marker = new google.maps.Marker({
         position: { lat: 28.6158816212149, lng: 77.3748894152614 },
@@ -286,6 +332,7 @@ function isInsideCircle(position, center, radius) {
     return distance <= radius;
 }
 
+var initialSetup= true;
 
 function placeMarkers(dataList) {
     let safeKidsCount= 0, unsafeKidsCount= 0;
@@ -319,21 +366,68 @@ function placeMarkers(dataList) {
             icon: isSafe ? safeChildIcon : unsafeChildIcon,
         });
         bounds.extend(data.position);  
-
         const safePopupContent = `
-            <div class="custom-popup safeKid">
-                <img src="https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png" alt="Image"/>
-                <h3>${data.kawachID}</h3>
-                <p>Latitude: ${data.position.lat} <br/> Longitude: ${data.position.lng}</p>
-            </div>
+        <table class="mainTable">
+                <tr>
+                    <td>
+                        <div class="custom-popup safeKid">
+                            <button class="infoBut"><i class="fa-solid fa-info"></i></button>
+                            <img src="https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png" alt="Image"/>
+                            <h3>${data.name}</h3>
+                            <p>Latitude: ${data.position.lat} <br/> Longitude: ${data.position.lng}</p>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="excessInfo">
+                            <h4>Academic Details</h4>
+                            <p> Class: ${data.class} <br>
+                                Roll No: ${data.roll} <br>
+                                Kawach ID: ${data.kawachID}</p>
+                            <h4>Father's Details</h4>
+                            <p>Name: ${data.fatherName}  <br>
+                                Contact: ${data.fatherContact}</p>
+                            <h4>Mother's Details</h4>
+                            <p>Name: ${data.motherName} <br>
+                            Contact: ${data.motherContact} </p>
+                            <h4>Address</h4>
+                            <p style="margin-bottom: 0;">${data.address} </p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         `;
     
         const unsafePopupContent = `
-            <div class="custom-popup unsafeKid">
-                <img src="https://cdn3d.iconscout.com/3d/premium/thumb/thief-3d-icon-download-in-png-blend-fbx-gltf-file-formats--theft-robber-criminal-avatar-professions-pack-avatars-icons-5250873.png?f=webp" alt="Image"/>
-                <h3>${data.kawachID}</h3>
-                <p>Latitude: ${data.position.lat} <br/> Longitude: ${data.position.lng}</p>
-            </div>
+            <table class="mainTable">
+                <tr>
+                    <td>
+                        <div class="custom-popup unsafeKid">
+                            <button class="infoBut"><i class="fa-solid fa-info"></i></button>
+                            <img src="https://cdn3d.iconscout.com/3d/premium/thumb/thief-3d-icon-download-in-png-blend-fbx-gltf-file-formats--theft-robber-criminal-avatar-professions-pack-avatars-icons-5250873.png?f=webp" alt="Image"/>
+                            <h3>${data.name}</h3>
+                            <p>Latitude: ${data.position.lat} <br/> Longitude: ${data.position.lng}</p>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="excessInfo">
+                            <h4>Academic Details</h4>
+                            <p> Class: ${data.class} <br>
+                                Roll No: ${data.roll} <br>
+                                Kawach ID: ${data.kawachID}</p>
+                            <h4>Father's Details</h4>
+                            <p>Name: ${data.fatherName}  <br>
+                                Contact: ${data.fatherContact}</p>
+                            <h4>Mother's Details</h4>
+                            <p>Name: ${data.motherName} <br>
+                            Contact: ${data.motherContact} </p>
+                            <h4>Address</h4>
+                            <p style="margin-bottom: 0;">${data.address} </p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
             `;
 
         // Create the InfoWindow
@@ -345,6 +439,8 @@ function placeMarkers(dataList) {
             if (currentMarker === marker) {
                 // If the same marker is clicked again
                 if (currentInfoWindow) {
+                    removeEventListener('click', currentInfoBut);
+                    currentInfoBut = null;
                     currentInfoWindow.close();
                     currentInfoWindow = null;
                     currentMarker = null;
@@ -352,6 +448,8 @@ function placeMarkers(dataList) {
             } else {
             
                 if (currentInfoWindow) {
+                    removeEventListener('click', currentInfoBut);
+                    currentInfoBut = null;
                     currentInfoWindow.close(); // Close the currently open InfoWindow if exists
                 }
         
@@ -361,9 +459,23 @@ function placeMarkers(dataList) {
                 currentMarker = marker;
             }
         });
+        google.maps.event.addListenerOnce(infoWindow, 'domready', function() {
+            const infoButton = document.querySelector('.infoBut');
+            const excessInfoDiv = document.querySelector('.excessInfo');
+
+            if (infoButton && excessInfoDiv) {
+                infoButton.addEventListener('click', function() {                    
+                    if (excessInfoDiv.style.display === "block") {
+                        excessInfoDiv.style.display = "none";
+                    } else {
+                        excessInfoDiv.style.display = "block";
+                    }
+                    currentInfoBut= infoButton;
+                });
+            }
+        });
     });
     map.fitBounds(bounds); 
-    
     console.log(`Safe Kids: ${safeKidsCount}\nUnsafe Kids: ${unsafeKidsCount}`);
 }
 

@@ -69,9 +69,13 @@ body {
 .custom-popup {
     width: 150px;
     padding: 10px;
+    margin: 0;
     /* background-color: #fff; */
     border-radius: 8px;
     text-align: center;
+    height: 280px;
+    max-height: 280px;
+    overflow-y: auto;
 }
 
 .custom-popup img {
@@ -95,13 +99,14 @@ body {
 }
 
 .custom-popup button {
-    margin-top: 10px;
     padding: 5px 10px;
     background-color: #4285f4;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 100%;
     cursor: pointer;
+    position: relative;
+    right: -40%;
 }
 
 .custom-popup button:hover {
@@ -114,6 +119,45 @@ body {
 
 .unsafeKid {
     background-color: rgb(255, 100, 100);
+}
+
+.infoTab {
+    position: absolute;
+    top: 70%;
+    
+}
+
+.excessInfo {
+    padding: 10px;
+    /* width: 230px; */
+    /* background-color: #4285f4; */
+    display: none; /* Initially hidden */
+    /* box-sizing: border-box; */
+    height: 300px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.excessInfo h4 {
+    font-size: medium;
+    margin: 0;
+}
+.excessInfo p {
+    font-size: small;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+.mainTable td {
+    padding: 0; /* Remove padding to ensure clean alignment */
+    vertical-align: top;
+    /* width: max-content; */
+}
+.mainTable {
+    margin: 0;
+    padding: 0;
 }
 
 
