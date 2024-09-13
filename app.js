@@ -112,14 +112,13 @@ app.post("/api/v1/ifUserExists", async function (req, res) {
     try {
         const foundUser= await User.findOne({imei: im});
         if(foundUser.kawachId == kaw) {
-            //Authentic user hai
-            return res.status(200).json({msg: "OK", success: true});
+            return res.status(200).json({exists: true});    //IMEI and KawachID exist and are linked
         }
         else {
-            return res.status(401).json({ error: 'Authentication failed: KawachId and IMEI code do not match', success: false});
+            return res.status(401).json({ exists: false }); //IMEI exists but KawachID linked is wrong
         }
     } catch (err){
-        return res.status(404).json({error: 'User not found', success: false});
+        return res.status(404).json({exists: false});   //IMEI doesn't exist
     }
 })
 

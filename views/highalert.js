@@ -435,6 +435,8 @@ function placeMarkers(dataList) {
             content: isSafe ? safePopupContent : unsafePopupContent,
         });
 
+        // infoWindow.open(map, marker);
+
         marker.addListener('click', function () {
             if (currentMarker === marker) {
                 // If the same marker is clicked again
