@@ -122,6 +122,12 @@ app.post("/api/v1/ifUserExists", async function (req, res) {
     }
 })
 
+app.post("/api/test/logToken", function (req, res) {
+    const tok= req.body.token;
+    console.log(`\n==> Device token is: ${tok}\n`);
+    res.status(202).send("OK boii 👍🏻");
+})
+
 app.post("/api/v1/getStaticData", async function (req, res) {
     const kaw= req.body.KawachID;
     const im= req.body.IMEI;

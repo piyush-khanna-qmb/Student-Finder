@@ -2,7 +2,7 @@ window.onload = initMap;
 
 var map;
 let marker;
-// let imei = []; // IMEI to be fetched from input field
+
 var imeiList= [];
 
 var nightStyle = [

@@ -57,7 +57,6 @@ var markerDataList = [
     },
 ];
 
-
 var nightStyle = [
     { elementType: 'geometry', stylers: [{ color: '#212121' }] },
     { elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
@@ -289,6 +288,384 @@ var earthBlueStyle = [
     }
 ];
 
+const darkMapStyle = [
+    {
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#242f3e"
+        }
+      ]
+    },
+    {
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#746855"
+        }
+      ]
+    },
+    {
+      "elementType": "labels.text.stroke",
+      "stylers": [
+        {
+          "color": "#242f3e"
+        }
+      ]
+    },
+    {
+      "featureType": "administrative.locality",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#d59563"
+        }
+      ]
+    },
+    {
+      "featureType": "road",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#38414e"
+        }
+      ]
+    },
+    {
+      "featureType": "road",
+      "elementType": "geometry.stroke",
+      "stylers": [
+        {
+          "color": "#212a37"
+        }
+      ]
+    },
+    {
+      "featureType": "road",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#9ca5b3"
+        }
+      ]
+    },
+    {
+      "featureType": "water",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#17263c"
+        }
+      ]
+    }
+  ];
+  
+const iMapsStyle= [ // Replace with your custom style JSON
+    {
+        "featureType": "all",
+        "elementType": "geometry",
+        "stylers": [
+            { "visibility": "on" },
+            { "saturation": -100 }
+        ]
+    },
+    {
+        "featureType": "landscape",
+        "elementType": "geometry",
+        "stylers": [
+            { "color": "#f2f2f2" }
+        ]
+    },
+    {
+        "featureType": "water",
+        "elementType": "geometry",
+        "stylers": [
+            { "color": "#a2c2e0" }
+        ]
+    },
+    {
+        "featureType": "road",
+        "elementType": "geometry",
+        "stylers": [
+            { "color": "#ffffff" }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "elementType": "geometry",
+        "stylers": [
+            { "visibility": "off" }
+        ]
+    }
+]
+
+const iMapsDarkStyle = [
+    {
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#212121"
+        }
+      ]
+    },
+    {
+      "elementType": "labels.icon",
+      "stylers": [
+        {
+          "visibility": "off"
+        }
+      ]
+    },
+    {
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#757575"
+        }
+      ]
+    },
+    {
+      "elementType": "labels.text.stroke",
+      "stylers": [
+        {
+          "color": "#212121"
+        }
+      ]
+    },
+    {
+      "featureType": "administrative",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#757575"
+        }
+      ]
+    },
+    {
+      "featureType": "administrative.country",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#9e9e9e"
+        }
+      ]
+    },
+    {
+      "featureType": "administrative.land_parcel",
+      "stylers": [
+        {
+          "visibility": "off"
+        }
+      ]
+    },
+    {
+      "featureType": "administrative.locality",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#bdbdbd"
+        }
+      ]
+    },
+    {
+      "featureType": "poi",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#757575"
+        }
+      ]
+    },
+    {
+      "featureType": "poi.park",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#181818"
+        }
+      ]
+    },
+    {
+      "featureType": "poi.park",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#616161"
+        }
+      ]
+    },
+    {
+      "featureType": "poi.park",
+      "elementType": "labels.text.stroke",
+      "stylers": [
+        {
+          "color": "#1b1b1b"
+        }
+      ]
+    },
+    {
+      "featureType": "road",
+      "elementType": "geometry.fill",
+      "stylers": [
+        {
+          "color": "#2c2c2c"
+        }
+      ]
+    },
+    {
+      "featureType": "road",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#8a8a8a"
+        }
+      ]
+    },
+    {
+      "featureType": "road.arterial",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#373737"
+        }
+      ]
+    },
+    {
+      "featureType": "road.highway",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#3c3c3c"
+        }
+      ]
+    },
+    {
+      "featureType": "road.highway.controlled_access",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#4e4e4e"
+        }
+      ]
+    },
+    {
+      "featureType": "road.local",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#616161"
+        }
+      ]
+    },
+    {
+      "featureType": "transit",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#757575"
+        }
+      ]
+    },
+    {
+      "featureType": "water",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#000000"
+        }
+      ]
+    },
+    {
+      "featureType": "water",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#3d3d3d"
+        }
+      ]
+    }
+  ];
+  
+const googleDark = [
+    { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+    { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+    { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+    {
+      featureType: "administrative.locality",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#d59563" }],
+    },
+    {
+      featureType: "poi",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#d59563" }],
+    },
+    {
+      featureType: "poi.park",
+      elementType: "geometry",
+      stylers: [{ color: "#263c3f" }],
+    },
+    {
+      featureType: "poi.park",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#6b9a76" }],
+    },
+    {
+      featureType: "road",
+      elementType: "geometry",
+      stylers: [{ color: "#38414e" }],
+    },
+    {
+      featureType: "road",
+      elementType: "geometry.stroke",
+      stylers: [{ color: "#212a37" }],
+    },
+    {
+      featureType: "road",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#9ca5b3" }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry",
+      stylers: [{ color: "#746855" }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry.stroke",
+      stylers: [{ color: "#1f2835" }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#f3d19c" }],
+    },
+    {
+      featureType: "transit",
+      elementType: "geometry",
+      stylers: [{ color: "#2f3948" }],
+    },
+    {
+      featureType: "transit.station",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#d59563" }],
+    },
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [{ color: "#17263c" }],
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#515c6d" }],
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.stroke",
+      stylers: [{ color: "#17263c" }],
+    },
+  ];
 
 async function initMap() {
     // Initialize the map centered at some default location
@@ -300,7 +677,8 @@ async function initMap() {
     map = await new google.maps.Map(document.getElementById("map"), {
         zoom: 10,
         center: { lat: 28.6158816212149, lng: 77.3748894152614 },
-        styles: nightStyle
+        // disableDefaultUI: true,
+        // styles: nightStyle
     });
     marker = new google.maps.Marker({
         position: { lat: 28.6158816212149, lng: 77.3748894152614 },
@@ -430,16 +808,12 @@ function placeMarkers(dataList) {
             </table>
             `;
 
-        // Create the InfoWindow
         const infoWindow = new google.maps.InfoWindow({
             content: isSafe ? safePopupContent : unsafePopupContent,
         });
 
-        // infoWindow.open(map, marker);
-
         marker.addListener('click', function () {
             if (currentMarker === marker) {
-                // If the same marker is clicked again
                 if (currentInfoWindow) {
                     removeEventListener('click', currentInfoBut);
                     currentInfoBut = null;
@@ -452,10 +826,9 @@ function placeMarkers(dataList) {
                 if (currentInfoWindow) {
                     removeEventListener('click', currentInfoBut);
                     currentInfoBut = null;
-                    currentInfoWindow.close(); // Close the currently open InfoWindow if exists
+                    currentInfoWindow.close(); 
                 }
         
-                // Toggle InfoWindow visibility on marker click
                 infoWindow.open(map, marker);
                 currentInfoWindow = infoWindow;
                 currentMarker = marker;
