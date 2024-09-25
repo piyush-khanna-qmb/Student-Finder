@@ -83,6 +83,26 @@ app.post("/student", async function (req, res) {
     res.redirect("/")
 })
 
+app.post("/api/v1/getCoordinatesByKawachID", async function (req, res) {
+    try {
+        const kaw = req.body.kawachID;
+        const user = await User.findOne({ kawachId: kaw });
+        const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        // console.log(user.imei);
+        
+        if (sortedData.length > 0) {
+            const { latitude, longitude } = sortedData[0];
+            // console.log('Returning data:', { latitude, longitude });
+            return res.json({ lat: latitude, lng: longitude });
+        } else {
+            res.status(404).json({ error: 'No data found for given kawachID' });
+        }
+    } catch (err) {
+        console.error('No such kawach ID found:', err.message); // Log error message
+        res.status(500).json({ error: err.message });
+    }
+})
+
 app.post('/coordinates', async (req, res) => {
     try {
         const imei = req.body.imei;

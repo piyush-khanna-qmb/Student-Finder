@@ -722,16 +722,15 @@ function placeMarkers(dataList) {
 
     const safeChildIcon= {
         url: 'https://static.vecteezy.com/system/resources/previews/023/652/060/original/green-map-pointer-icon-on-a-transparent-background-free-png.png', 
-        scaledSize: new google.maps.Size(50, 50) // Optionally scale the marker size
+        scaledSize: new google.maps.Size(50, 50) // marker size bancho
     };
     const unsafeChildIcon= {
         url: 'https://cdn-icons-png.flaticon.com/512/7334/7334593.png', 
-        scaledSize: new google.maps.Size(40, 40) // Optionally scale the marker size
+        scaledSize: new google.maps.Size(40, 40) 
     };
     
     
     dataList.forEach(function(data) {
-        // Create a marker
         const isSafe= isInsideCircle(data.position, circleCenter, circleRadius);
         if(isSafe)
             safeKidsCount++;
