@@ -699,7 +699,7 @@ async function initMap() {
     });
 
     // Place the markers
-    placeMarkers(markerDataList);
+    await placeMarkers();
 }
 
 function isInsideCircle(position, center, radius) {
@@ -712,7 +712,40 @@ function isInsideCircle(position, center, radius) {
 
 var initialSetup= true;
 
-function placeMarkers(dataList) {
+async function getStudentsData1() {  
+  var schoolId1;
+  try {
+    const url = `https://kawachapidev-dzdhebhvdqa6fyek.canadacentral-01.azurewebsites.net/api/Admin/GetSchoolDataByCode/${schoolCodeFromServer}`;
+  
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      schoolId1= data.schoolId; // Extract schoolId from the response
+  } catch (error) {
+      console.error('Failed to fetch school data:', error);
+  }
+
+  const response = await fetch(`https://kawachapidev-dzdhebhvdqa6fyek.canadacentral-01.azurewebsites.net/api/Admin/GetAllStudentInfoData/${schoolId1}`);
+  return await response.json();
+}
+
+// Function to post and get location data for a specific student by kawachID
+async function getLocation1(kawachID) {
+  const response = await fetch('/api/v1/getCoordinatesByKawachID', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ kawachID }) // Send the kawachID in the body
+  });
+  return await response.json();
+}
+
+async function placeMarkers() {
     let safeKidsCount= 0, unsafeKidsCount= 0;
 
     const bounds = new google.maps.LatLngBounds(); 
@@ -728,9 +761,25 @@ function placeMarkers(dataList) {
         url: 'https://cdn-icons-png.flaticon.com/512/7334/7334593.png', 
         scaledSize: new google.maps.Size(40, 40) 
     };
+    var dataObjectList; 
+    try {
+        const students = await getStudentsData1();
+        
+        // Loop through each student and fetch their location data
+        dataObjectList = await Promise.all(students.map(async student => {
+            const locData = await getLocation1(student.kawachId);
+            return {
+                ...student,
+                position: locData.position // Add the position data
+            };
+        }));
+        
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return [];
+    }
     
-    
-    dataList.forEach(function(data) {
+    dataObjectList.forEach(function(data) {
         const isSafe= isInsideCircle(data.position, circleCenter, circleRadius);
         if(isSafe)
             safeKidsCount++;
@@ -742,33 +791,35 @@ function placeMarkers(dataList) {
             title: data.kawachID,
             icon: isSafe ? safeChildIcon : unsafeChildIcon,
         });
-        bounds.extend(data.position);  
+        bounds.extend(data.position);
+        const studentsClass= data.className.replace(/^class/i, '');
         const safePopupContent = `
         <table class="mainTable">
                 <tr>
                     <td>
                         <div class="custom-popup safeKid">
                             <button class="infoBut"><i class="fa-solid fa-info"></i></button>
-                            <img src="https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png" alt="Image"/>
-                            <h3>${data.name}</h3>
-                            <p>Latitude: ${data.position.lat} <br/> Longitude: ${data.position.lng}</p>
+                            <img src="${data.imageUrl}" alt="Image"/>
+                            <h3>${data.studentName}</h3>
+                            <p style="margin-bottom: 3px">Latitude: ${data.position.lat}</p>
+                            <p style="margin-top: 0px">Longitude: ${data.position.lng}</p>
                         </div>
                     </td>
 
                     <td>
                         <div class="excessInfo">
                             <h4>Academic Details</h4>
-                            <p> Class: ${data.class} <br>
-                                Roll No: ${data.roll} <br>
-                                Kawach ID: ${data.kawachID}</p>
-                            <h4>Father's Details</h4>
-                            <p>Name: ${data.fatherName}  <br>
-                                Contact: ${data.fatherContact}</p>
-                            <h4>Mother's Details</h4>
-                            <p>Name: ${data.motherName} <br>
-                            Contact: ${data.motherContact} </p>
-                            <h4>Address</h4>
-                            <p style="margin-bottom: 0;">${data.address} </p>
+                            <p> Class: ${studentsClass} - ${data.sectionName}<br>
+                                Roll No: ${data.classRollNo} <br>
+                                Kawach ID: ${data.kawachId}</p>
+                            <h4>Parent's Details</h4>
+                            <p>Father's Name: ${data.fatherName}  <br>
+                               Mother's Name: ${data.motherName}</p>
+                            <h4>Contact Details</h4>
+                            <p>Mobile No.: ${data.mobileNo} </br>
+                            Alternate No.: ${data.alternateNo} </br> </p>
+                            <p>Address: ${data.address} <br>
+                            Email: ${data.emailId} </p>
                         </div>
                     </td>
                 </tr>
@@ -781,26 +832,27 @@ function placeMarkers(dataList) {
                     <td>
                         <div class="custom-popup unsafeKid">
                             <button class="infoBut"><i class="fa-solid fa-info"></i></button>
-                            <img src="https://cdn3d.iconscout.com/3d/premium/thumb/thief-3d-icon-download-in-png-blend-fbx-gltf-file-formats--theft-robber-criminal-avatar-professions-pack-avatars-icons-5250873.png?f=webp" alt="Image"/>
-                            <h3>${data.name}</h3>
-                            <p>Latitude: ${data.position.lat} <br/> Longitude: ${data.position.lng}</p>
+                            <img src="${data.imageUrl}" alt="Image"/>
+                            <h3>${data.studentName}</h3>
+                            <p style="margin-bottom: 3px">Latitude: ${data.position.lat}</p>
+                            <p style="margin-top: 0px">Longitude: ${data.position.lng}</p>
                         </div>
                     </td>
 
                     <td>
                         <div class="excessInfo">
                             <h4>Academic Details</h4>
-                            <p> Class: ${data.class} <br>
-                                Roll No: ${data.roll} <br>
-                                Kawach ID: ${data.kawachID}</p>
-                            <h4>Father's Details</h4>
-                            <p>Name: ${data.fatherName}  <br>
-                                Contact: ${data.fatherContact}</p>
-                            <h4>Mother's Details</h4>
-                            <p>Name: ${data.motherName} <br>
-                            Contact: ${data.motherContact} </p>
-                            <h4>Address</h4>
-                            <p style="margin-bottom: 0;">${data.address} </p>
+                            <p> Class: ${studentsClass} - ${data.sectionName}<br>
+                                Roll No: ${data.classRollNo} <br>
+                                Kawach ID: ${data.kawachId}</p>
+                            <h4>Parent's Details</h4>
+                            <p>Father's Name: ${data.fatherName}  <br>
+                               Mother's Name: ${data.motherName}</p>
+                            <h4>Contact Details</h4>
+                            <p>Mobile No.: ${data.mobileNo} </br>
+                            Alternate No.: ${data.alternateNo} </br> </p>
+                            <p>Address: ${data.address} <br>
+                            Email: ${data.emailId} </p>
                         </div>
                     </td>
                 </tr>

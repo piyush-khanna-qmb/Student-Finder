@@ -93,7 +93,7 @@ app.post("/api/v1/getCoordinatesByKawachID", async function (req, res) {
         if (sortedData.length > 0) {
             const { latitude, longitude } = sortedData[0];
             // console.log('Returning data:', { latitude, longitude });
-            return res.json({ lat: latitude, lng: longitude });
+            return res.json({ position: {lat: latitude, lng: longitude }});
         } else {
             res.status(404).json({ error: 'No data found for given kawachID' });
         }
@@ -256,6 +256,12 @@ app.get("/", function (req, res) {
 
 app.get("/highAlert", function (req, res) {
     res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: 123})
+})
+
+app.get("/:schoolCode/high-alert", async function (req, res) {
+    const schoolCode= req.params.schoolCode;
+    console.log("School name: ", schoolCode);
+    res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
 })
 
 app.listen(port, function() {
