@@ -155,13 +155,13 @@ app.post("/api/v1/registrationCheck", async function (req, res) {
             } 
             
             else {
-                return res.status(401).json({ exists: true, message: "IMEI already exists. Please check credentials and try loggin in." }); // IMEI exists, par KawachID does not match
+                return res.status(401).json({ exists: true, message: "IMEI already exists. Please check credentials and try logging in." }); // IMEI exists, par KawachID does not match
             }
         } 
         
         const foundKawach = await User.findOne({ kawachId: kawachID });
         if (foundKawach) {
-            return res.status(401).json({ exists: true, message: "KawachID already exists. Please check credentials and try loggin in." }); //  KawachID exist karti hai in DB but IMEI does not match
+            return res.status(401).json({ exists: true, message: "KawachID already exists. Please check credentials and try logging in." }); //  KawachID exist karti hai in DB but IMEI does not match
         }
 
         return res.status(200).json({ exists: false }); // Neither IMEI nor KawachID exists. Completely New user
