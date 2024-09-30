@@ -135,12 +135,42 @@ app.post("/api/v1/ifUserExists", async function (req, res) {
             return res.status(200).json({exists: true});    //IMEI and KawachID exist and are linked
         }
         else {
-            return res.status(401).json({ exists: false }); //IMEI exists but KawachID linked is wrong
+            return res.status(404).json({ exists: false }); //IMEI exists but KawachID linked is wrong
         }
     } catch (err){
-        return res.status(404).json({exists: false});   //IMEI doesn't exist
+        return res.status(500).json({exists: false});  // Internal Server Error
     }
 })
+
+app.post("/api/v1/registrationCheck", async function (req, res) {
+    const kawachID = req.body.KawachID; 
+    const imei = req.body.IMEI; 
+    
+    try { 
+        const foundUser = await User.findOne({ imei: imei });
+        
+        if (foundUser) {
+            if (foundUser.kawachId === kawachID) {
+                return res.status(401).json({ exists: true, message: "User already exists." }); // User exist karta hai with both IMEI and KawachID matching
+            } 
+            
+            else {
+                return res.status(401).json({ exists: true, message: "IMEI already exists." }); // IMEI exists, par KawachID does not match
+            }
+        } 
+        
+        const foundKawach = await User.findOne({ kawachId: kawachID });
+        if (foundKawach) {
+            return res.status(401).json({ exists: true, message: "KawachID already exists." }); //  KawachID exist karti hai in DB but IMEI does not match
+        }
+
+        return res.status(200).json({ exists: false }); // Neither IMEI nor KawachID exists. Completely New user
+
+    } catch (err) {
+        return res.status(500).json({ error: "Internal server error." });
+    }
+});
+
 
 app.post("/api/test/logToken", function (req, res) {
     const tok= req.body.token;
