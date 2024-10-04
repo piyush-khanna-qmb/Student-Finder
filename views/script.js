@@ -104,9 +104,9 @@ var schoolMarkerIcon = {
     scaledSize: new google.maps.Size(50, 50) // Scale the marker size (optional)
 };
 
-function initMap() {
+async function initMap() {
     // Initialize the map centered at some default location
-    fetch(`https://kawachapidev-dzdhebhvdqa6fyek.canadacentral-01.azurewebsites.net/api/Admin/GetSchoolDataByCode/${schoolCode}`, {
+    await fetch(`https://kawachapidev-dzdhebhvdqa6fyek.canadacentral-01.azurewebsites.net/api/Admin/GetSchoolDataByCode/${schoolCode}`, {
         method: 'GET',
         headers: { 'Accept': '*/*' }
     })
