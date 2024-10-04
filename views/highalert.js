@@ -747,6 +747,8 @@ async function getStudentsData1() {
 
 // Function to post and get location data for a specific student by kawachID
 async function getLocation1(kawachID) {
+  console.log(kawachID);
+  
   const response = await fetch('/api/v1/getCoordinatesByKawachID', {
       method: 'POST',
       headers: {
