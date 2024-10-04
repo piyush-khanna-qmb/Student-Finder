@@ -109,7 +109,6 @@ app.post('/coordinates', async (req, res) => {
         const user = await User.findOne({ imei: imei });
         const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         console.log(user.kawachId);
-        
         if (sortedData.length > 0) {
             const { latitude, longitude } = sortedData[0];
             console.log('Returning data:', { latitude, longitude });
@@ -117,6 +116,46 @@ app.post('/coordinates', async (req, res) => {
         } else {
             res.status(404).json({ error: 'No data found' });
         }
+    } catch (err) {
+        console.error('Error:', err.message); // Log error message
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/checkedCoordinates', async (req, res) => {
+    try {
+        const kawachId = req.body.imei; // Waha se ulta bhijwa rha hai data. Don't worry. Ye line theek hai.
+        const comingSchoolCode = req.body.schoolCode;
+        const user = await User.findOne({ kawachId: kawachId });
+        if (user) {
+            const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            fetch(`https://kawachapidev-dzdhebhvdqa6fyek.canadacentral-01.azurewebsites.net/api/Admin/GetStudentByKawachId/${kawachId}`, {
+                method: 'GET',
+                headers: { 'Accept': '*/*' }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+                return response.json();
+            })
+            .then(data => {
+                if(data.schoolCode == comingSchoolCode) {
+                    if (sortedData.length > 0) {
+                        const { latitude, longitude } = sortedData[0];
+                        return res.json({ lat: latitude, lng: longitude });
+                    } else {
+                        return res.status(404).json({ error: 'No data found' });
+                    }
+                } else {
+                    return res.status(401).json({ error: 'Trying to access kawachID of another school' });
+                }
+            })
+            .catch(error => console.error('Failed to fetch school code:', error));
+            
+        } else {
+            return res.status(404).json({error: "User Not Found!"});
+        }
+        
     } catch (err) {
         console.error('Error:', err.message); // Log error message
         res.status(500).json({ error: err.message });
@@ -131,13 +170,14 @@ app.post("/api/v1/ifUserExists", async function (req, res) {
     
     try {
         const foundUser= await User.findOne({imei: im});
-        if(foundUser.kawachId == kaw) {
+        if(foundUser && foundUser.kawachId == kaw) {
             return res.status(200).json({exists: true});    //IMEI and KawachID exist and are linked
         }
         else {
             return res.status(404).json({ exists: false }); //IMEI exists but KawachID linked is wrong
         }
-    } catch (err){
+    }
+    catch (err){
         return res.status(500).json({exists: false});  // Internal Server Error
     }
 })
@@ -286,6 +326,12 @@ app.get("/", function (req, res) {
 
 app.get("/highAlert", function (req, res) {
     res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: 123})
+})
+
+app.get("/:schoolCode/principal", async function (req, res) {
+    const schoolCode= req.params.schoolCode;
+    console.log("School name: ", schoolCode);
+    res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
 })
 
 app.get("/:schoolCode/high-alert", async function (req, res) {

@@ -96,26 +96,66 @@ var nightStyle = [
     }
 ];
 
+var boundingCircle;
+var schoolRad, schoolCentre;
+
+var schoolMarkerIcon = {
+    url: 'https://cdn4.iconfinder.com/data/icons/location-and-map-flat-1/512/locationandmap_school-education-location-map-marker-512.png', 
+    scaledSize: new google.maps.Size(50, 50) // Scale the marker size (optional)
+};
 
 function initMap() {
     // Initialize the map centered at some default location
-    map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 8,
-        center: { lat: 28.6158816212149, lng: 77.3748894152614 },
-        // styles: nightStyle
-    });
-    marker = new google.maps.Marker({
-        position: { lat: 28.6158816212149, lng: 77.3748894152614 },
-        map: map,
-        title: `ManoJava Software Pvt. Ltd.`
-    });
+    fetch(`https://kawachapidev-dzdhebhvdqa6fyek.canadacentral-01.azurewebsites.net/api/Admin/GetSchoolDataByCode/${schoolCode}`, {
+        method: 'GET',
+        headers: { 'Accept': '*/*' }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+        return response.json();
+    })
+    .then(data => {
+        // console.log(JSON.parse(data.position));
+        schoolCentre= JSON.parse(data.position);
+        schoolRad= data.radius;
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 10,
+            center: JSON.parse(data.position),
+            // styles: nightStyle
+        });
+        marker = new google.maps.Marker({
+            position:JSON.parse(data.position),
+            map: map,
+            title: `ManoJava Software Pvt. Ltd.`,
+            icon: schoolMarkerIcon
+        });
+        boundingCircle = new google.maps.Circle({
+            map: map,
+            // center: { lat: 28.6158816212149, lng: 77.3748894152614 }, 
+            center: JSON.parse(data.position),
+            radius: data.radius*10, 
+            strokeColor: "#c39d2c", 
+            strokeOpacity: 0.8, 
+            strokeWeight: 2, 
+            fillColor: "#d7b82d",
+            fillOpacity: 0.35, 
+        });
+    })
+    .catch(error => console.error('Failed to fetch school code:', error));
 }
 
 function resetMap() {
     map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 8,
-        center: { lat: 28.6158816212149, lng: 77.3748894152614 },
+        zoom: 10,
+        center: schoolCentre,
         // styles: nightStyle
+    });
+    marker = new google.maps.Marker({
+        position:schoolCentre,
+        map: map,
+        title: `ManoJava Software Pvt. Ltd.`,
+        icon: schoolMarkerIcon
     });
 }
 
@@ -137,13 +177,15 @@ function updateMap(lat, lng, bounds) {
 function fetchCoordinates() {
     if (imeiList) {
         const bounds = new google.maps.LatLngBounds();  
+        var circleCenter = boundingCircle.getCenter();
+        bounds.extend(circleCenter);
         const fetchPromises = imeiList.map(imei => {
-            return fetch('/coordinates', {
+            return fetch('/checkedCoordinates', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ imei: imei })
+                body: JSON.stringify({ imei: imei, schoolCode: schoolCode })
             })
             .then(response => response.json())
             .then(data => {
@@ -180,7 +222,7 @@ function startPolling() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    initMap();
+    // initMap();
 
     // Setup event listeners for form submission
     document.getElementById('updateMap').addEventListener('click', (event) => {
