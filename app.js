@@ -305,7 +305,17 @@ app.post("/api/v1/createUser", async function (req, res) {
         imei: im,
         kawachId: kaw,
         accountDob: dob,
-        last50kData: []  
+        last50kData: [
+            {
+                latitude: 28.615881,
+                longitude: 77.374889,
+                altitude: 0,
+                timestamp: "2024/08/23 11:15:24",
+                battery: 0,
+                speed: 0,
+                signalStrength: -70
+            }
+        ]  
     });
 
     try {

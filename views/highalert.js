@@ -691,7 +691,7 @@ async function initMap() {
         map = new google.maps.Map(document.getElementById("map"), {
             zoom: 10,
             center: JSON.parse(data.position),
-            // styles: nightStyle
+            styles: nightStyle
         });
         marker = new google.maps.Marker({
             position:schoolCentre,
@@ -702,7 +702,7 @@ async function initMap() {
         boundingCircle = new google.maps.Circle({
             map: map, 
             center: schoolCentre,
-            radius: data.radius*10, 
+            radius: data.radius*1000, 
             strokeColor: "#c39d2c", 
             strokeOpacity: 0.8, 
             strokeWeight: 2, 

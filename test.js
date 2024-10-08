@@ -1,17 +1,24 @@
-function getCreationTime() {
-    const date = new Date();
+iswithinHome= false
+iswithinSchool= false
+lastRange= -1
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(date.getDate()).padStart(2, '0');
+loop 
+{
+    check -> iswithinHome , iswithinSchool;
 
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-
-    const formattedDateTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
-    return formattedDateTime;
+    if(!iswithinHome && !iswithinSchool && lastRange!=0) {
+        Notification("Your child is out of both ranges");
+        lastRange= 0
+        save(lastRange)
+    }
+    else if(!iswithinHome && iswithinSchool && lastRange!=1) {
+        Notification("Your child is inside school premises");
+        lastRange= 1
+        save(lastRange)
+    }
+    else if(iswithinHome && !iswithinSchool && lastRange!=2) {
+        Notification("Your child is out of ranges");
+        lastRange= 2
+        save(lastRange)
+    }
 }
-
-const timing= getCreationTime();
-console.log(timing);
