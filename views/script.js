@@ -104,6 +104,11 @@ var schoolMarkerIcon = {
 
 async function initMap() {
     // Initialize the map centered at some default location
+    map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 10,
+        center: {lat: 28.615816, lng: 77.3748894},
+        // styles: nightStyle
+      });
     await fetch(`https://kawachapidev-dzdhebhvdqa6fyek.canadacentral-01.azurewebsites.net/api/Admin/GetSchoolDataByCode/${schoolCode}`, {
         method: 'GET',
         headers: { 'Accept': '*/*' }
@@ -118,11 +123,6 @@ async function initMap() {
         schoolRad= data.radius;
         schoolName= data.schoolName;
 
-        map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 10,
-            center: JSON.parse(data.position),
-            // styles: nightStyle
-        });
         marker = new google.maps.Marker({
             position:JSON.parse(data.position),
             map: map,

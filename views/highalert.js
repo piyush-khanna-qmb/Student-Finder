@@ -673,6 +673,12 @@ window.onload= initMap;
 
 async function initMap() {
     // Initialize the map centered at some default location
+    map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 10,
+      center: {lat: 28.615816, lng: 77.3748894},
+      styles: nightStyle
+    });
+    
     schoolMarkerIcon = {
       url: 'https://cdn4.iconfinder.com/data/icons/location-and-map-flat-1/512/locationandmap_school-education-location-map-marker-512.png', 
       scaledSize: new google.maps.Size(50, 50) // Scale the marker size (optional)
@@ -690,11 +696,6 @@ async function initMap() {
         schoolCentre= JSON.parse(data.position);
         schoolRad= data.radius;
 
-        map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 10,
-            center: JSON.parse(data.position),
-            styles: nightStyle
-        });
         marker = new google.maps.Marker({
             position:schoolCentre,
             map: map,
@@ -903,8 +904,15 @@ async function placeMarkers() {
   
               if (infoButton && excessInfoDiv) {
                   infoButton.addEventListener('click', function() {                    
-                      if (excessInfoDiv.style.display === "block") {
+                      if (excessInfoDiv.style.display == "block") {
                           excessInfoDiv.style.display = "none";
+                          if (currentInfoWindow) {
+                            google.maps.event.clearListeners(currentInfoWindow, 'domready');
+                            currentInfoWindow.close();
+                            currentInfoWindow = null;
+                            currentMarker = null;
+                        }
+                          
                       } else {
                           excessInfoDiv.style.display = "block";
                       }
@@ -913,7 +921,7 @@ async function placeMarkers() {
               }
           });
       });
-        
+
       map.fitBounds(bounds); 
       console.log(`Safe Kids: ${safeKidsCount}\nUnsafe Kids: ${unsafeKidsCount}`);
     } catch (error) {
