@@ -331,14 +331,20 @@ app.post("/api/v1/createUser", async function (req, res) {
 //#endregion
 
 app.get("/", function (req, res) {
-    res.render("index2.ejs", {API_KEY: API_KEY});
+    res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: 'dps01'});
 })
 
 app.get("/highAlert", function (req, res) {
-    res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: 123})
+    res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: 'dps01'})
 })
 
 app.get("/:schoolCode/principal", async function (req, res) {
+    const schoolCode= req.params.schoolCode;
+    console.log("School name: ", schoolCode);
+    res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
+})
+
+app.get("/:schoolCode/tracking", async function (req, res) {
     const schoolCode= req.params.schoolCode;
     console.log("School name: ", schoolCode);
     res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})

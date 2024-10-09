@@ -1,5 +1,3 @@
-window.onload = initMap;
-
 var map;
 let marker;
 
@@ -97,7 +95,7 @@ var nightStyle = [
 ];
 
 var boundingCircle;
-var schoolRad, schoolCentre;
+var schoolRad, schoolCentre, schoolName;
 
 var schoolMarkerIcon = {
     url: 'https://cdn4.iconfinder.com/data/icons/location-and-map-flat-1/512/locationandmap_school-education-location-map-marker-512.png', 
@@ -118,23 +116,24 @@ async function initMap() {
         // console.log(JSON.parse(data.position));
         schoolCentre= JSON.parse(data.position);
         schoolRad= data.radius;
+        schoolName= data.schoolName;
 
         map = new google.maps.Map(document.getElementById("map"), {
             zoom: 10,
             center: JSON.parse(data.position),
-            styles: nightStyle
+            // styles: nightStyle
         });
         marker = new google.maps.Marker({
             position:JSON.parse(data.position),
             map: map,
-            title: `ManoJava Software Pvt. Ltd.`,
+            title: `${schoolName}`,
             icon: schoolMarkerIcon
         });
         boundingCircle = new google.maps.Circle({
             map: map,
             // center: { lat: 28.6158816212149, lng: 77.3748894152614 }, 
             center: JSON.parse(data.position),
-            radius: data.radius*1000, 
+            radius: data.radius, 
             strokeColor: "#c39d2c", 
             strokeOpacity: 0.8, 
             strokeWeight: 2, 
@@ -154,8 +153,19 @@ function resetMap() {
     marker = new google.maps.Marker({
         position:schoolCentre,
         map: map,
-        title: `ManoJava Software Pvt. Ltd.`,
+        title: `${schoolName}`,
         icon: schoolMarkerIcon
+    });
+    boundingCircle = new google.maps.Circle({
+        map: map,
+        // center: { lat: 28.6158816212149, lng: 77.3748894152614 }, 
+        center: schoolCentre,
+        radius: schoolRad, 
+        strokeColor: "#c39d2c", 
+        strokeOpacity: 0.8, 
+        strokeWeight: 2, 
+        fillColor: "#d7b82d",
+        fillOpacity: 0.35, 
     });
 }
 
@@ -197,7 +207,8 @@ function fetchCoordinates() {
                     var marker = new google.maps.Marker({
                         position: position,
                         map: map,
-                        title: `IMEI: ${data.lat}`  
+                        // title: `IMEI: ${data.lat}`
+                        title: `KawachID: ${imei}`  
                     });
 
                     bounds.extend(position);  
@@ -221,10 +232,9 @@ function startPolling() {
     setInterval(fetchCoordinates, 5000);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // initMap();
-
-    // Setup event listeners for form submission
+document.addEventListener('DOMContentLoaded', async () => {
+    
+    await initMap();
     document.getElementById('updateMap').addEventListener('click', (event) => {
         event.preventDefault(); // Prevent default form submission
         const inputElements = document.querySelectorAll('input[name="imei"]');

@@ -669,6 +669,8 @@ const googleDark = [
     },
   ];
 
+window.onload= initMap;
+
 async function initMap() {
     // Initialize the map centered at some default location
     schoolMarkerIcon = {
@@ -683,7 +685,7 @@ async function initMap() {
         if (!response.ok) throw new Error(`Error: ${response.statusText}`);
         return response.json();
     })
-    .then(data => {
+    .then(async data => {
         console.log(JSON.parse(data.position));
         schoolCentre= JSON.parse(data.position);
         schoolRad= data.radius;
@@ -702,16 +704,16 @@ async function initMap() {
         boundingCircle = new google.maps.Circle({
             map: map, 
             center: schoolCentre,
-            radius: data.radius*1000, 
+            radius: data.radius, 
             strokeColor: "#c39d2c", 
             strokeOpacity: 0.8, 
             strokeWeight: 2, 
             fillColor: "#d7b82d",
             fillOpacity: 0.35, 
         });
+        placeMarkers();
     })
     .catch(error => console.error('Failed to fetch school code:', error));
-    await placeMarkers();
 }
 
 function isInsideCircle(position, center, radius) {
@@ -779,7 +781,6 @@ async function placeMarkers() {
     try {
         const students = await getStudentsData1();
         
-        // Loop through each student and fetch their location data
         dataObjectList = await Promise.all(students.map(async student => {
             const locData = await getLocation1(student.kawachId);
             return {
@@ -802,6 +803,7 @@ async function placeMarkers() {
               icon: isSafe ? safeChildIcon : unsafeChildIcon,
           });
           bounds.extend(data.position);
+          const finalDataImg = data.imageUrl ? data.imageUrl : "https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png";
           const studentsClass= data.className.replace(/^class/i, '');
           const safePopupContent = `
           <table class="mainTable">
@@ -809,7 +811,7 @@ async function placeMarkers() {
                       <td>
                           <div class="custom-popup safeKid">
                               <button class="infoBut"><i class="fa-solid fa-info"></i></button>
-                              <img src="${data.imageUrl}" alt="Image"/>
+                              <img src="${finalDataImg}" alt="Image"/>
                               <h3>${data.studentName}</h3>
                               <p style="margin-bottom: 3px">Latitude: ${data.position.lat}</p>
                               <p style="margin-top: 0px">Longitude: ${data.position.lng}</p>
@@ -842,7 +844,7 @@ async function placeMarkers() {
                       <td>
                           <div class="custom-popup unsafeKid">
                               <button class="infoBut"><i class="fa-solid fa-info"></i></button>
-                              <img src="${data.imageUrl}" alt="Image"/>
+                              <img src="${finalDataImg}" alt="Image"/>
                               <h3>${data.studentName}</h3>
                               <p style="margin-bottom: 3px">Latitude: ${data.position.lat}</p>
                               <p style="margin-top: 0px">Longitude: ${data.position.lng}</p>
