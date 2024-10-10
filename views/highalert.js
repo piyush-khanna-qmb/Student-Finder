@@ -7,7 +7,9 @@ let currentMarker = null;
 currentInfoBut= null;
 var schoolRad, schoolCentre;
 var schoolMarkerIcon;
+var lastZoom, lastCenter;
 
+var markersArray= [];
 var markerDataList = [
     { 
         kawachID: 'STA00101', 
@@ -712,9 +714,21 @@ async function initMap() {
             fillColor: "#d7b82d",
             fillOpacity: 0.35, 
         });
-        placeMarkers();
+        placeMarkers(true);
+
+
+        setInterval(() => {          
+          placeMarkers(false);  // No autobound
+        }, 10000);
     })
     .catch(error => console.error('Failed to fetch school code:', error));
+}
+
+function clearMarkers() {
+  for (let i = 0; i < markersArray.length; i++) {
+      markersArray[i].setMap(null); 
+  }
+  markersArray = []; 
 }
 
 function isInsideCircle(position, center, radius) {
@@ -762,13 +776,15 @@ async function getLocation1(kawachID) {
   return await response.json();
 }
 
-async function placeMarkers() {
+async function placeMarkers(shouldBound) {
     let safeKidsCount= 0, unsafeKidsCount= 0;
 
     const bounds = new google.maps.LatLngBounds(); 
     var circleCenter = boundingCircle.getCenter();
     var circleRadius = boundingCircle.getRadius();
-    bounds.extend(circleCenter);
+    if(shouldBound) {
+      bounds.extend(circleCenter);
+    }
 
     const safeChildIcon= {
         url: 'https://static.vecteezy.com/system/resources/previews/023/652/060/original/green-map-pointer-icon-on-a-transparent-background-free-png.png', 
@@ -789,9 +805,14 @@ async function placeMarkers() {
                 position: locData.position 
             };
         }));
+        if(!currentInfoWindow) {
+          console.log("Nothing's open");
+          clearMarkers();
+        } else {
+          console.log("SOmething open. Not re-rendering");
+        }
         dataObjectList.forEach(function(data) {
           // console.log(data);
-          
           const isSafe= isInsideCircle(data.position, schoolCentre, schoolRad);
           if(isSafe)
               safeKidsCount++;
@@ -803,7 +824,10 @@ async function placeMarkers() {
               title: data.kawachID,
               icon: isSafe ? safeChildIcon : unsafeChildIcon,
           });
-          bounds.extend(data.position);
+          markersArray.push(marker);
+          if(shouldBound)
+            bounds.extend(data.position);
+
           const finalDataImg = data.imageUrl ? data.imageUrl : "https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png";
           const studentsClass= data.className.replace(/^class/i, '');
           const safePopupContent = `
@@ -921,8 +945,9 @@ async function placeMarkers() {
               }
           });
       });
+      if(shouldBound)
+        map.fitBounds(bounds); 
 
-      map.fitBounds(bounds); 
       console.log(`Safe Kids: ${safeKidsCount}\nUnsafe Kids: ${unsafeKidsCount}`);
     } catch (error) {
         console.error('Error fetching data:', error);
