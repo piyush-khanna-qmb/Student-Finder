@@ -105,8 +105,17 @@ var schoolMarkerIcon = {
 var markerMap= new Map();
 var markersList= [];
 
+function showLoading() {
+    document.getElementById('overlay-container').style.display = 'block';
+  }
+  
+  function hideLoading() {
+    document.getElementById('overlay-container').style.display = 'none';
+  }
+
 async function initMap() {
     // Initialize the map centered at some default location
+    showLoading();
     map = new google.maps.Map(document.getElementById("map"), {
         zoom: 10,
         center: {lat: 28.615816, lng: 77.3748894},
@@ -143,6 +152,7 @@ async function initMap() {
             fillColor: "#d7b82d",
             fillOpacity: 0.35, 
         });
+        hideLoading();
     })
     .catch(error => console.error('Failed to fetch school code:', error));
 }
@@ -182,6 +192,7 @@ function clearMarkers() {
   }
 
 function fetchCoordinates() {
+    showLoading();
     if (imeiList) {
         const bounds = new google.maps.LatLngBounds();  
         var circleCenter = boundingCircle.getCenter();
@@ -225,6 +236,7 @@ function fetchCoordinates() {
                 });
                 markersList.push(marker);
             }
+            hideLoading();
         });
         console.log(markerMap);
         
@@ -264,14 +276,14 @@ function relaodMap() {
 
         Promise.all(fetchPromises).then(() => {
             clearMarkers();
-            if (!schoolMarker) {
+            // if (!schoolMarker) {
                 schoolMarker = new google.maps.Marker({
                     position: schoolCentre,
                     map: map,
                     title: schoolName,
                     icon: schoolMarkerIcon
                 });
-            }
+            // }
             for (let [imei, dataset] of markerMap) {
                 var markerHere = new google.maps.Marker({
                     position: dataset.lastPos,
@@ -299,7 +311,7 @@ function relaodMap() {
 
 function startPolling() {
     // Poll the server every 10 seconds
-    setInterval(relaodMap, 40000);
+    setInterval(relaodMap, 10000);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

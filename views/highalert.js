@@ -674,11 +674,11 @@ const googleDark = [
 window.onload= initMap;
 
 function showLoading() {
-  document.getElementById('loading-overlay').style.display = 'flex';
+  document.getElementById('overlay-container').style.display = 'block';
 }
 
 function hideLoading() {
-  document.getElementById('loading-overlay').style.display = 'none';
+  document.getElementById('overlay-container').style.display = 'none';
 }
 
 async function initMap() {
