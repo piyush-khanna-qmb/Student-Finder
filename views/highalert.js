@@ -920,6 +920,11 @@ async function placeMarkers(shouldBound) {
                   infoWindow.open(map, marker);
                   currentInfoWindow = infoWindow;
                   currentMarker = marker;
+
+                  google.maps.event.addListener(infoWindow, 'closeclick', function() {
+                    currentInfoWindow = null; // Reset the currentInfoWindow
+                    currentMarker = null;
+                });
               }
           });
           google.maps.event.addListenerOnce(infoWindow, 'domready', function() {
