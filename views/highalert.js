@@ -673,8 +673,17 @@ const googleDark = [
 
 window.onload= initMap;
 
+function showLoading() {
+  document.getElementById('loading-overlay').style.display = 'flex';
+}
+
+function hideLoading() {
+  document.getElementById('loading-overlay').style.display = 'none';
+}
+
 async function initMap() {
     // Initialize the map centered at some default location
+    showLoading();
     map = new google.maps.Map(document.getElementById("map"), {
       zoom: 10,
       center: {lat: 28.615816, lng: 77.3748894},
@@ -715,13 +724,14 @@ async function initMap() {
             fillOpacity: 0.35, 
         });
         placeMarkers(true);
-
+        hideLoading();
 
         setInterval(() => {          
           placeMarkers(false);  // No autobound
         }, 10000);
     })
     .catch(error => console.error('Failed to fetch school code:', error));
+    
 }
 
 function clearMarkers() {
