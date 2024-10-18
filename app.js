@@ -330,6 +330,20 @@ app.post("/api/v1/createUser", async function (req, res) {
 
 //#endregion
 
+//#region MAKE-DO APIs
+
+app.get("/api/Admin/GetStudentByKawachId/:kawachId", function (req, res) {
+    const kaww= req.params.kawachId;
+    try {
+        return res.status(200).json({mobileNo: "1234567890", schoolId: 1, classId: 2, sectionId: 6});
+    }
+    catch {
+        return res.status(500).json({error: "Koi baat ni ji. Change url from student-finder to actual azure."});
+    }
+})
+
+//#endregion
+
 app.get("/", function (req, res) {
     res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: 'dps01'});
 })
