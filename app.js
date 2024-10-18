@@ -335,7 +335,7 @@ app.post("/api/v1/createUser", async function (req, res) {
 app.get("/api/Admin/GetStudentByKawachId/:kawachId", function (req, res) {
     const kaww= req.params.kawachId;
     try {
-        return res.status(200).json({mobileNo: "1234567890", schoolId: 1, classId: 2, sectionId: 6});
+        return res.status(200).json({mobileNo: "8755916729", schoolId: 1, classId: 2, sectionId: 6});
     }
     catch {
         return res.status(500).json({error: "Koi baat ni ji. Change url from student-finder to actual azure."});
