@@ -1,3 +1,20 @@
+:root {
+    /* --white: #fff;
+    --green: #4caf50;
+    --blue: #2896f3;
+    --yellow: #fbc107;
+    --red: #f55153; */
+    --white: #fff;
+    --green: #4caf50;
+    --blue: #2896f3;
+    --yellow: #fbc107;
+    --red: #f612169e;
+    /* --cord: #99ff00; */
+    --cord: #fbc1079e;
+    --transition-duration: 0.25s;
+}
+
+  
 @font-face {
     font-family: Lastica;
     src: url(/views/Lastica.ttf);
@@ -411,3 +428,134 @@ button:hover {
         margin-bottom: 0;
     }
 }
+  
+  .toasts-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 1rem;
+    z-index: 100;
+  
+    .toast {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: left;
+      max-width: 50rem;
+      min-width: 28rem;
+      background-color: #121212;
+      border-radius: 0.5rem;
+      padding: 1.3rem;
+      margin-bottom: 2.4rem;
+      opacity: 0;
+      transform: translateX(100%);
+      animation: toast-opening var(--transition-duration) ease-in-out forwards;
+      overflow-x: hidden;
+  
+      &:not(.active) {
+        animation-name: toast-closing;
+        animation-duration: 0.35s;
+      }
+  
+      .t-icon {
+        margin-right: 2.4rem;
+  
+        svg {
+          fill: var(--white);
+          width: 2.4rem;
+          height: 2.4rem;
+        }
+      }
+  
+      .t-message {
+        margin-right: 1rem;
+        color: var(--white);
+        line-height: 1rem;
+        font-family:monospace;
+        font-size: clamp(1rem, 1.8vw, 1.1rem);
+      }
+  
+      .t-close {
+        svg {
+          fill: var(--white);
+          opacity: 1;
+          width: 1.8rem;
+          height: 1.8rem;
+          transition: opacity var(--transition-duration);
+          cursor: pointer;
+  
+          @media (hover: hover) {
+            opacity: 0.5;
+          }
+        }
+  
+        &:hover svg {
+          opacity: 1;
+        }
+      }
+  
+      .t-progress-bar {
+        display: block;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 6px;
+        width: 100%;
+        border-radius: 0 0 0 0.5rem;
+        background-color: rgba(255, 255, 255, 0.5);
+        animation: progress-bar-animation linear forwards var(--toast-duration, 3000ms);
+        transform-origin: left;
+      }
+  
+      &.success {
+        background-color: var(--green);
+      }
+      &.system {
+        background-color: var(--blue);
+      }
+      &.warning {
+        background-color: var(--cord);
+        backdrop-filter: blur(1rem);
+      }
+      &.error {
+        background-color: var(--red);
+        backdrop-filter: blur(1rem);
+      }
+    }
+  }
+  
+  @keyframes toast-opening {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0%);
+    }
+  }
+  
+  @keyframes toast-closing {
+    0% {
+      opacity: 1;
+      transform: translateX(0%);
+    }
+    75% {
+      max-height: 15rem;
+      padding: 2.4rem;
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    100% {
+      max-height: 0;
+      padding: 0;
+      transform: translateX(100%);
+    }
+  }
+  
+  @keyframes progress-bar-animation {
+    to {
+      transform: scaleX(0);
+    }
+  }

@@ -135,7 +135,7 @@ app.post('/checkedCoordinates', async (req, res) => {
                 headers: { 'Accept': '*/*' }
             })
             .then(response => {
-                if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+                if (!response.ok) throw new Error(`Error hai ji at line no 138`);
                 return response.json();
             })
             .then(data => {
