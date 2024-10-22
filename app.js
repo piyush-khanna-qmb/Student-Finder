@@ -122,6 +122,25 @@ app.post('/coordinates', async (req, res) => {
     }
 });
 
+app.post('/coordinates', async (req, res) => {
+    try {
+        const imei = req.body.imei;
+        const user = await User.findOne({ imei: imei });
+        const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        console.log(user.kawachId);
+        if (sortedData.length > 0) {
+            const { latitude, longitude } = sortedData[0];
+            console.log('Returning data:', { latitude, longitude });
+            return res.json({ lat: latitude, lng: longitude });
+        } else {
+            res.status(404).json({ error: 'No data found' });
+        }
+    } catch (err) {
+        console.error('Error:', err.message); // Log error message
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.post('/checkedCoordinates', async (req, res) => {
     try {
         const kawachId = req.body.imei; // Waha se ulta bhijwa rha hai data. Don't worry. Ye line theek hai.
@@ -151,6 +170,36 @@ app.post('/checkedCoordinates', async (req, res) => {
                 }
             })
             .catch(error => console.error('Failed to fetch school code:', error));
+            
+        } else {
+            return res.status(404).json({error: "User Not Found!"});
+        }
+        
+    } catch (err) {
+        console.error('Error:', err.message); // Log error message
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/uncheckedCoordinates', async (req, res) => {
+    try {
+        const kawachId = req.body.imei; // Waha se ulta bhijwa rha hai data. Don't worry. Ye line theek hai.
+        const comingSchoolCode = "dps01";
+        const user = await User.findOne({ kawachId: kawachId });
+        if (user) {
+            const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            
+            if(comingSchoolCode == "dps01") {
+                if (sortedData.length > 0) {
+                    const { latitude, longitude } = sortedData[0];
+                    return res.json({ lat: latitude, lng: longitude });
+                } else {
+                    return res.status(404).json({ error: 'No data found' });
+                }
+            } else {
+                return res.status(401).json({ error: 'Trying to access kawachID of another school' });
+            }
             
         } else {
             return res.status(404).json({error: "User Not Found!"});
