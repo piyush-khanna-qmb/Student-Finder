@@ -6,7 +6,7 @@ const bodyParser= require('body-parser')
 const mongoose= require('mongoose');
 // const {router} = require('./routes/dataRoutes');
 const app= express()
-const port =  process.env.PORT|| 8080;
+const port =  process.env.PORT || 8050;
 const API_KEY= process.env.API_KEY;
 
 app.use(bodyParser.urlencoded({extended: true}))
@@ -86,6 +86,8 @@ app.post("/student", async function (req, res) {
 app.post("/api/v1/getCoordinatesByKawachID", async function (req, res) {
     try {
         const kaw = req.body.kawachID;
+        console.log("Finding for", kaw);
+        
         const user = await User.findOne({ kawachId: kaw });
         const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         // console.log(user.imei);
@@ -103,29 +105,38 @@ app.post("/api/v1/getCoordinatesByKawachID", async function (req, res) {
     }
 })
 
-app.post('/coordinates', async (req, res) => {
+
+app.post("/internal/api/v1/getCoordinatesByKawachID", async function (req, res) {
     try {
-        const imei = req.body.imei;
-        const user = await User.findOne({ imei: imei });
-        const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        console.log(user.kawachId);
-        if (sortedData.length > 0) {
-            const { latitude, longitude } = sortedData[0];
-            console.log('Returning data:', { latitude, longitude });
-            return res.json({ lat: latitude, lng: longitude });
-        } else {
-            res.status(404).json({ error: 'No data found' });
+        const kaw = req.body.kawachID;
+        // console.log("Finding for", kaw);
+        
+        const user = await User.findOne({ kawachId: kaw });
+        if (user) {
+            const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            // console.log(user.imei);
+            
+            if (sortedData.length > 0) {
+                const { latitude, longitude } = sortedData[0];
+                // console.log('Returning data:', { latitude, longitude });
+                return res.json({ position: {lat: latitude, lng: longitude }});
+            } else {
+                res.status(404).json({ error: 'No data found for given kawachID' });
+            }
+        }
+        else {
+            res.json({ position: {lat: 0.0, lng: 0.0 }})
         }
     } catch (err) {
-        console.error('Error:', err.message); // Log error message
+        console.error('No such kawach ID found:', err.message); // Log error message
         res.status(500).json({ error: err.message });
     }
-});
+})
 
 app.post('/coordinates', async (req, res) => {
     try {
-        const imei = req.body.imei;
-        const user = await User.findOne({ imei: imei });
+        const kawwach = req.body.kawachId;
+        const user = await User.findOne({ kawachId: kawwach });
         const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         console.log(user.kawachId);
         if (sortedData.length > 0) {
@@ -149,7 +160,7 @@ app.post('/checkedCoordinates', async (req, res) => {
         if (user) {
             const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-            fetch(`https://kawachapidev-dzdhebhvdqa6fyek.canadacentral-01.azurewebsites.net/api/Admin/GetStudentByKawachId/${kawachId}`, {
+            fetch(`http://49.50.119.238:3000/api/Admin/GetStudentByKawachId/${kawachId}`, {
                 method: 'GET',
                 headers: { 'Accept': '*/*' }
             })

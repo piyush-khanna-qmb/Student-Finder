@@ -9,6 +9,10 @@ var schoolRad, schoolCentre;
 var schoolMarkerIcon;
 var lastZoom, lastCenter;
 
+const toggleButton = document.getElementById('toggleButton');
+const listContainer = document.getElementById('listContainer');
+let isOn = false;
+
 var markersArray= [];
 var markerDataList = [
     { 
@@ -59,6 +63,180 @@ var markerDataList = [
         motherContact: "+91 95489445863",
         address: "D-1, Gali no. 4, gurunanakpura, Modinagar, Ghaziabad"
     },
+];
+
+const kawachDarkThemeMap = [
+  // Base styling for dark theme
+  {
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#212121'
+      }
+    ]
+  },
+  {
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#757575'
+      }
+    ]
+  },
+  {
+    elementType: 'labels.text.stroke',
+    stylers: [
+      {
+        color: '#212121'
+      }
+    ]
+  },
+  // Water styling
+  {
+    featureType: 'water',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#000000'
+      }
+    ]
+  },
+  {
+    featureType: 'water',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#3d3d3d'
+      }
+    ]
+  },
+  // Road styling
+  {
+    featureType: 'road',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#2c2c2c'
+      }
+    ]
+  },
+  {
+    featureType: 'road.highway',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#3c3c3c'
+      }
+    ]
+  },
+  {
+    featureType: 'road.arterial',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#373737'
+      }
+    ]
+  },
+  // Keeping original visibility settings
+  {
+    featureType: 'administrative.land_parcel',
+    elementType: 'labels',
+    stylers: [
+      {
+        visibility: 'off'
+      }
+    ]
+  },
+  {
+    featureType: 'poi',
+    elementType: 'labels.text',
+    stylers: [
+      {
+        visibility: 'off'
+      }
+    ]
+  },
+  {
+    featureType: 'poi.attraction',
+    stylers: [
+      {
+        visibility: 'off'
+      }
+    ]
+  },
+  {
+    featureType: 'poi.business',
+    stylers: [
+      {
+        visibility: 'off'
+      }
+    ]
+  },
+  {
+    featureType: 'poi.park',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#181818'
+      }
+    ]
+  },
+  {
+    featureType: 'poi.park',
+    elementType: 'labels.text',
+    stylers: [
+      {
+        visibility: 'off'
+      }
+    ]
+  },
+  {
+    featureType: 'road.local',
+    elementType: 'labels',
+    stylers: [
+      {
+        visibility: 'off'
+      }
+    ]
+  },
+  // Additional dark theme elements
+  {
+    featureType: 'transit',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#757575'
+      }
+    ]
+  },
+  {
+    featureType: 'administrative',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#757575'
+      }
+    ]
+  },
+  {
+    featureType: 'administrative.country',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#9e9e9e'
+      }
+    ]
+  },
+  {
+    featureType: 'administrative.locality',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#bdbdbd'
+      }
+    ]
+  }
 ];
 
 var nightStyle = [
@@ -684,6 +862,18 @@ function hideLoading() {
 async function initMap() {
     // Initialize the map centered at some default location
     showLoading();
+
+    toggleButton.addEventListener('click', () => {
+      isOn = !isOn;
+      
+      toggleButton.classList.toggle('on', isOn);
+      if (isOn) {
+          listContainer.classList.remove('hidden');
+      } else {
+          listContainer.classList.add('hidden');
+      }
+    });
+
     map = new google.maps.Map(document.getElementById("map"), {
       zoom: 10,
       center: {lat: 28.615816, lng: 77.3748894},
@@ -694,7 +884,7 @@ async function initMap() {
       url: 'https://cdn4.iconfinder.com/data/icons/location-and-map-flat-1/512/locationandmap_school-education-location-map-marker-512.png', 
       scaledSize: new google.maps.Size(50, 50) // Scale the marker size (optional)
     };
-    await fetch(`https://kawachapidev-dzdhebhvdqa6fyek.canadacentral-01.azurewebsites.net/api/Admin/GetSchoolDataByCode/${schoolCode}`, {
+    await fetch(`http://49.50.119.238:3000/api/Admin/GetSchoolDataByCode/${schoolCode}`, {
       method: 'GET',
       headers: { 'Accept': '*/*' }
     })
@@ -703,14 +893,14 @@ async function initMap() {
         return response.json();
     })
     .then(async data => {
-        console.log(JSON.parse(data.position));
+        // console.log(JSON.parse(data.position));
         schoolCentre= JSON.parse(data.position);
         schoolRad= data.radius;
 
         marker = new google.maps.Marker({
             position:schoolCentre,
             map: map,
-            title: `ManoJava Software Pvt. Ltd.`,
+            title: data.schoolName,
             icon: schoolMarkerIcon
         });
         boundingCircle = new google.maps.Circle({
@@ -723,12 +913,12 @@ async function initMap() {
             fillColor: "#d7b82d",
             fillOpacity: 0.35, 
         });
-        placeMarkers(true);
+        await placeMarkers(true);
         hideLoading();
 
         setInterval(() => {          
           placeMarkers(false);  // No autobound
-        }, 10000);
+        }, 20000);
     })
     .catch(error => console.error('Failed to fetch school code:', error));
     
@@ -754,7 +944,7 @@ var initialSetup= true;
 async function getStudentsData1() {  
   var schoolId1;
   try {
-    const url = `https://kawachapidev-dzdhebhvdqa6fyek.canadacentral-01.azurewebsites.net/api/Admin/GetSchoolDataByCode/${schoolCode}`;
+    const url = `http://49.50.119.238:3000/api/Admin/GetSchoolDataByCode/${schoolCode}`;
   
       const response = await fetch(url);
       
@@ -768,15 +958,15 @@ async function getStudentsData1() {
       console.error('Failed to fetch school data:', error);
   }
 
-  const response = await fetch(`https://kawachapidev-dzdhebhvdqa6fyek.canadacentral-01.azurewebsites.net/api/Admin/GetAllStudentInfoData/${schoolId1}`);
+  const response = await fetch(`http://49.50.119.238:3000/api/Admin/GetAllStudentInfoData/${schoolId1}`);
   return await response.json();
 }
 
 // Function to post and get location data for a specific student by kawachID
 async function getLocation1(kawachID) {
-  console.log(kawachID);
+  // console.log(kawachID);
   
-  const response = await fetch('/api/v1/getCoordinatesByKawachID', {
+  const response = await fetch('/internal/api/v1/getCoordinatesByKawachID', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
@@ -784,6 +974,25 @@ async function getLocation1(kawachID) {
       body: JSON.stringify({ kawachID }) // Send the kawachID in the body
   });
   return await response.json();
+}
+
+var items= []; 
+function renderList(items) {
+  listContainer.innerHTML = ''; // Clear previous content
+
+  if (items.length === 0) {
+      // Show default message when no items are in the list
+      const message = document.createElement('div');
+      message.className = 'empty-message';
+      message.textContent = "Everything's good!";
+      listContainer.appendChild(message);
+  } else {
+      items.forEach(item => {
+          const listItem = document.createElement('div');
+          listItem.textContent = item;
+          listContainer.appendChild(listItem);
+      });
+  }
 }
 
 async function placeMarkers(shouldBound) {
@@ -816,154 +1025,164 @@ async function placeMarkers(shouldBound) {
             };
         }));
         if(!currentInfoWindow) {
-          console.log("Nothing's open");
+          // console.log("Nothing's open");
           clearMarkers();
         } else {
-          console.log("SOmething open. Not re-rendering");
+          // console.log("SOmething open. Not re-rendering");
         }
         dataObjectList.forEach(function(data) {
-          // console.log(data);
-          const isSafe= isInsideCircle(data.position, schoolCentre, schoolRad);
-          if(isSafe)
-              safeKidsCount++;
-          else
-              unsafeKidsCount++;
-          var marker = new google.maps.Marker({
-              position: data.position,
-              map: map,
-              title: data.kawachID,
-              icon: isSafe ? safeChildIcon : unsafeChildIcon,
-          });
-          markersArray.push(marker);
-          if(shouldBound)
-            bounds.extend(data.position);
-
-          const finalDataImg = data.imageUrl ? data.imageUrl : "https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png";
-          const studentsClass= data.className.replace(/^class/i, '');
-          const safePopupContent = `
-          <table class="mainTable">
-                  <tr>
-                      <td>
-                          <div class="custom-popup safeKid">
-                              <button class="infoBut"><i class="fa-solid fa-info"></i></button>
-                              <img src="${finalDataImg}" alt="Image"/>
-                              <h3>${data.studentName}</h3>
-                              <p style="margin-bottom: 3px">Latitude: ${data.position.lat}</p>
-                              <p style="margin-top: 0px">Longitude: ${data.position.lng}</p>
-                          </div>
-                      </td>
+          // // console.log(`Data print karwa re: ${data} \n`);
+          if(data.position.lat == "0.0") { 
+            if(isOn) {
+              // show list of unassigned IDs
+              // console.log(`Ye pakda gaya: ${data.kawachId}`); 
+              renderList();             
+              }
+          }
+          else {
+            const isSafe= isInsideCircle(data.position, schoolCentre, schoolRad);
+            if(isSafe)
+                safeKidsCount++;
+            else
+                unsafeKidsCount++;
+            var marker = new google.maps.Marker({
+                position: data.position,
+                map: map,
+                title: data.kawachId,
+                icon: isSafe ? safeChildIcon : unsafeChildIcon,
+            });
+            markersArray.push(marker);
+            if(shouldBound)
+              bounds.extend(data.position);
   
-                      <td>
-                          <div class="excessInfo">
-                              <h4>Academic Details</h4>
-                              <p> Class: ${studentsClass} - ${data.sectionName}<br>
-                                  Roll No: ${data.classRollNo} <br>
-                                  Kawach ID: ${data.kawachId}</p>
-                              <h4>Parent's Details</h4>
-                              <p>Father's Name: ${data.fatherName}  <br>
-                                 Mother's Name: ${data.motherName}</p>
-                              <h4>Contact Details</h4>
-                              <p>Mobile No.: ${data.mobileNo} </br>
-                              Alternate No.: ${data.alternateNo} </br> </p>
-                              <p>Address: ${data.address} <br>
-                              Email: ${data.emailId} </p>
-                          </div>
-                      </td>
-                  </tr>
-              </table>
-          `;
-      
-          const unsafePopupContent = `
-              <table class="mainTable">
-                  <tr>
-                      <td>
-                          <div class="custom-popup unsafeKid">
-                              <button class="infoBut"><i class="fa-solid fa-info"></i></button>
-                              <img src="${finalDataImg}" alt="Image"/>
-                              <h3>${data.studentName}</h3>
-                              <p style="margin-bottom: 3px">Latitude: ${data.position.lat}</p>
-                              <p style="margin-top: 0px">Longitude: ${data.position.lng}</p>
-                          </div>
-                      </td>
+            const finalDataImg = data.imageUrl ? data.imageUrl : "https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png";
+            const studentsClass= data.className.replace(/^class/i, '');
+            const safePopupContent = `
+            <table class="mainTable">
+                    <tr>
+                        <td>
+                            <div class="custom-popup safeKid">
+                                <button class="infoBut"><i class="fa-solid fa-info"></i></button>
+                                <img src="${finalDataImg}" alt="Image"/>
+                                <h3>${data.studentName}</h3>
+                                <p style="margin-bottom: 3px">Latitude: ${data.position.lat}</p>
+                                <p style="margin-top: 0px">Longitude: ${data.position.lng}</p>
+                            </div>
+                        </td>
+    
+                        <td>
+                            <div class="excessInfo">
+                                <h4>Academic Details</h4>
+                                <p> Class: ${studentsClass} - ${data.sectionName}<br>
+                                    Roll No: ${data.classRollNo} <br>
+                                    Kawach ID: ${data.kawachId}</p>
+                                <h4>Parent's Details</h4>
+                                <p>Father's Name: ${data.fatherName}  <br>
+                                   Mother's Name: ${data.motherName}</p>
+                                <h4>Contact Details</h4>
+                                <p>Mobile No.: ${data.mobileNo} </br>
+                                Alternate No.: ${data.alternateNo} </br> </p>
+                                <p>Address: ${data.address} <br>
+                                Email: ${data.emailId} </p>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            `;
+        
+            const unsafePopupContent = `
+                <table class="mainTable">
+                    <tr>
+                        <td>
+                            <div class="custom-popup unsafeKid">
+                                <button class="infoBut"><i class="fa-solid fa-info"></i></button>
+                                <img src="${finalDataImg}" alt="Image"/>
+                                <h3>${data.studentName}</h3>
+                                <p style="margin-bottom: 3px">Latitude: ${data.position.lat}</p>
+                                <p style="margin-top: 0px">Longitude: ${data.position.lng}</p>
+                            </div>
+                        </td>
+    
+                        <td>
+                            <div class="excessInfo">
+                                <h4>Academic Details</h4>
+                                <p> Class: ${studentsClass} - ${data.sectionName}<br>
+                                    Roll No: ${data.classRollNo} <br>
+                                    Kawach ID: ${data.kawachId}</p>
+                                <h4>Parent's Details</h4>
+                                <p>Father's Name: ${data.fatherName}  <br>
+                                   Mother's Name: ${data.motherName}</p>
+                                <h4>Contact Details</h4>
+                                <p>Mobile No.: ${data.mobileNo} </br>
+                                Alternate No.: ${data.alternateNo} </br> </p>
+                                <p>Address: ${data.address} <br>
+                                Email: ${data.emailId} </p>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                `;
+    
+            const infoWindow = new google.maps.InfoWindow({
+                content: isSafe ? safePopupContent : unsafePopupContent,
+            });
+    
+            marker.addListener('click', function () {
+                if (currentMarker === marker) {
+                    if (currentInfoWindow) {
+                        removeEventListener('click', currentInfoBut);
+                        currentInfoBut = null;
+                        currentInfoWindow.close();
+                        currentInfoWindow = null;
+                        currentMarker = null;
+                    }
+                } else {
+                
+                    if (currentInfoWindow) {
+                        removeEventListener('click', currentInfoBut);
+                        currentInfoBut = null;
+                        currentInfoWindow.close(); 
+                    }
+            
+                    infoWindow.open(map, marker);
+                    currentInfoWindow = infoWindow;
+                    currentMarker = marker;
   
-                      <td>
-                          <div class="excessInfo">
-                              <h4>Academic Details</h4>
-                              <p> Class: ${studentsClass} - ${data.sectionName}<br>
-                                  Roll No: ${data.classRollNo} <br>
-                                  Kawach ID: ${data.kawachId}</p>
-                              <h4>Parent's Details</h4>
-                              <p>Father's Name: ${data.fatherName}  <br>
-                                 Mother's Name: ${data.motherName}</p>
-                              <h4>Contact Details</h4>
-                              <p>Mobile No.: ${data.mobileNo} </br>
-                              Alternate No.: ${data.alternateNo} </br> </p>
-                              <p>Address: ${data.address} <br>
-                              Email: ${data.emailId} </p>
-                          </div>
-                      </td>
-                  </tr>
-              </table>
-              `;
-  
-          const infoWindow = new google.maps.InfoWindow({
-              content: isSafe ? safePopupContent : unsafePopupContent,
-          });
-  
-          marker.addListener('click', function () {
-              if (currentMarker === marker) {
-                  if (currentInfoWindow) {
-                      removeEventListener('click', currentInfoBut);
-                      currentInfoBut = null;
-                      currentInfoWindow.close();
-                      currentInfoWindow = null;
+                    google.maps.event.addListener(infoWindow, 'closeclick', function() {
+                      currentInfoWindow = null; // Reset the currentInfoWindow
                       currentMarker = null;
-                  }
-              } else {
-              
-                  if (currentInfoWindow) {
-                      removeEventListener('click', currentInfoBut);
-                      currentInfoBut = null;
-                      currentInfoWindow.close(); 
-                  }
-          
-                  infoWindow.open(map, marker);
-                  currentInfoWindow = infoWindow;
-                  currentMarker = marker;
-
-                  google.maps.event.addListener(infoWindow, 'closeclick', function() {
-                    currentInfoWindow = null; // Reset the currentInfoWindow
-                    currentMarker = null;
-                });
-              }
-          });
-          google.maps.event.addListenerOnce(infoWindow, 'domready', function() {
-              const infoButton = document.querySelector('.infoBut');
-              const excessInfoDiv = document.querySelector('.excessInfo');
-  
-              if (infoButton && excessInfoDiv) {
-                  infoButton.addEventListener('click', function() {                    
-                      if (excessInfoDiv.style.display == "block") {
-                          excessInfoDiv.style.display = "none";
-                          if (currentInfoWindow) {
-                            google.maps.event.clearListeners(currentInfoWindow, 'domready');
-                            currentInfoWindow.close();
-                            currentInfoWindow = null;
-                            currentMarker = null;
-                        }
-                          
-                      } else {
-                          excessInfoDiv.style.display = "block";
-                      }
-                      currentInfoBut= infoButton;
                   });
-              }
-          });
+                }
+            });
+            google.maps.event.addListenerOnce(infoWindow, 'domready', function() {
+                const infoButton = document.querySelector('.infoBut');
+                const excessInfoDiv = document.querySelector('.excessInfo');
+    
+                if (infoButton && excessInfoDiv) {
+                    infoButton.addEventListener('click', function() {                    
+                        if (excessInfoDiv.style.display == "block") {
+                            excessInfoDiv.style.display = "none";
+                            if (currentInfoWindow) {
+                              google.maps.event.clearListeners(currentInfoWindow, 'domready');
+                              currentInfoWindow.close();
+                              currentInfoWindow = null;
+                              currentMarker = null;
+                          }
+                            
+                        } else {
+                            excessInfoDiv.style.display = "block";
+                        }
+                        currentInfoBut= infoButton;
+                    });
+                }
+              });
+            }
+          
       });
       if(shouldBound)
         map.fitBounds(bounds); 
 
-      console.log(`Safe Kids: ${safeKidsCount}\nUnsafe Kids: ${unsafeKidsCount}`);
+      // console.log(`Safe Kids: ${safeKidsCount}\nUnsafe Kids: ${unsafeKidsCount}`);
     } catch (error) {
         console.error('Error fetching data:', error);
         return [];

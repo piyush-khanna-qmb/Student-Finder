@@ -11,6 +11,9 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=<%=API_KEY%>&libraries=geometry"></script>
 </head>
 <body>
+    <div class="toggle-container">
+        <div class="toggle-button" id="toggleButton"></div>
+    </div>
     <div id="overlay-container">
         <div id="logo-container">
             <img id="animated-logo" src="../views/favicon.png" alt="Animated Logo">
@@ -28,6 +31,7 @@
             <div id="map"></div>
         </div>
     </div>
+    <div class="list-container hidden" id="listContainer"></div>
     <!-- <div class="infoTab">
         <p></p>
     </div> -->

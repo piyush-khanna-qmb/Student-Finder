@@ -450,7 +450,6 @@ body {
     font-size: var(--font-size);
     font-family: var(--font-family);
     font-weight: 400;
-    background-color: var(--color-black);
     color: var(--color-white);
     margin: 0 auto;
     scroll-behavior: smooth;

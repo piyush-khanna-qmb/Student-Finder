@@ -3,6 +3,68 @@
     font-family: Lastica;
     src: url(/views/Lastica.ttf);
 }
+.toggle-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toggle-button {
+    width: 50px;
+    height: 25px;
+    position: relative;
+    background-color: #d1394e;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.toggle-button::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.toggle-button.on {
+    background-color: #4caf50;
+}
+
+.toggle-button.on::before {
+    transform: translateX(25px);
+}
+
+.list-container {
+    position: absolute;
+    right: 20px; /* Bottom-right corner */
+    bottom: 20px;
+    width: 200px;
+    height: 150px; /* Fixed size for consistent layout */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    opacity: 1; /* Initially transparent */
+    transition: opacity 0.5s ease;
+}
+
+.list-container.hidden {
+    opacity: 0; /* Fade in to opaque */
+}
+
+.empty-message {
+    color: #555;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 40px; /* Center within container height */
+}
 
 #overlay-container {
     position: fixed;
@@ -120,7 +182,6 @@ body {
     width: 150px;
     padding: 10px;
     margin: 0;
-    /* background-color: #fff; */
     border-radius: 8px;
     text-align: center;
     height: 280px;
@@ -129,7 +190,8 @@ body {
 }
 
 .custom-popup img {
-    width: 90%;
+    width: 125px;
+    height: 135px;
     border-radius: 5px;
     margin-bottom: 10px;
 }
