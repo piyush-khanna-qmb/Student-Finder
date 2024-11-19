@@ -1126,7 +1126,7 @@ async function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
         zoom: 4.5,
         center: {lat: 22.9734, lng: 78.6569},
-        styles: kawachDarkThemeMap
+        styles: kawachLightThemeMap
       });
     await fetch(`http://49.50.119.238:3000/api/Admin/GetSchoolDataByCode/${schoolCode}`, {
         method: 'GET',

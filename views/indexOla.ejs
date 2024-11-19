@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Location Picker</title>
+    <link rel="stylesheet" href="../views/styleOla.css">
+    <link href="../views/OlaMapsWebSDK/dist/style.css" rel="stylesheet" />
+    <script src="../views/OlaMapsWebSDK/dist/olamaps-js-sdk.umd.js"></script>
+    <link rel="icon" href="../views/shico.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../views/favicon.png" type="image/x-icon">
+    <script src="https://kit.fontawesome.com/bfc55d4923.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="overlay-container">
+        <div id="logo-container">
+            <img id="animated-logo" src="../views/favicon.png" alt="Animated Logo">
+        </div>
+    </div>
+    <div class="video-background">
+        <video autoplay muted loop id="background-video">
+            <source src="../views/ab3.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="container">
+        <div class="input-list">
+            <div class="input-column">
+                <form action="../student" method="post">
+                    <h2>T r a c k i n g . . .</h2>
+                    <div class="page">
+                        <div class="content group">
+                            <div id="list">
+                                <label for="data_100"></label>
+                                <input type="text" id="data_100" name="imei" placeholder="M y K a w a c h &nbsp; I D">
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-toas" id="updateMap" type="submit">S t a r t</button>
+                </form>
+                <button type="button" id="addFieldButton">+</button>
+            </div>
+        </div>
+
+        <div id="map"></div>
+        <script>
+            // Wait for the DOM and scripts to be fully loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                const olaMaps = new OlaMapsSDK.OlaMaps({
+                    apiKey: ["X38iaL8tA3qDbSfUwyBCbK9hCUFQiVJJzQYtS6Gi"],
+                });
+                const myMap = olaMaps.init({
+                    style: "https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json",
+                    container: 'map',
+                    center: [77.61648476788898, 12.931423492103944],
+                    zoom: 15,
+                })
+            });
+        </script>
+        
+        
+    </div>
+
+    <script>
+        const schoolCode = "<%=schoolCode%>";
+    </script>
+    <script src="../views/script.js"></script>
+</body>
+</html>

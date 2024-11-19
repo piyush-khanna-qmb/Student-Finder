@@ -105,31 +105,36 @@ app.post("/api/v1/getCoordinatesByKawachID", async function (req, res) {
     }
 })
 
+function getRandomLoc(min, max) {
+    const randomValue = Math.random() * (max - min) + min;
+    return parseFloat(randomValue.toFixed(7));
+}
 
 app.post("/internal/api/v1/getCoordinatesByKawachID", async function (req, res) {
+
     try {
         const kaw = req.body.kawachID;
-        // console.log("Finding for", kaw);
         
         const user = await User.findOne({ kawachId: kaw });
         if (user) {
-            const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            // console.log(user.imei);
+            
+            const sortedData = user.last50kData;;
             
             if (sortedData.length > 0) {
                 const { latitude, longitude } = sortedData[0];
-                // console.log('Returning data:', { latitude, longitude });
                 return res.json({ position: {lat: latitude, lng: longitude }});
             } else {
-                res.status(404).json({ error: 'No data found for given kawachID' });
+                return res.status(404).json({ error: 'No data found for given kawachID' });
             }
         }
         else {
-            res.json({ position: {lat: 0.0, lng: 0.0 }})
+            var raandLat = getRandomLoc(28.87, 28.88);
+            var raandLng= getRandomLoc(77.60, 77.63);
+            return res.json({ rand: true,position: {lat: raandLat, lng: raandLng }})
         }
     } catch (err) {
         console.error('No such kawach ID found:', err.message); // Log error message
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 })
 
@@ -422,6 +427,12 @@ app.get("/:schoolCode/tracking", async function (req, res) {
     const schoolCode= req.params.schoolCode;
     console.log("School name: ", schoolCode);
     res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
+})
+
+app.get("/:schoolCode/olahuakbar", async function (req, res) {
+    const schoolCode= req.params.schoolCode;
+    console.log("School name: ", schoolCode);
+    res.render("indexOla.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
 })
 
 app.get("/:schoolCode/high-alert", async function (req, res) {
