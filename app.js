@@ -409,6 +409,14 @@ app.get("/api/Admin/GetStudentByKawachId/:kawachId", function (req, res) {
 
 //#endregion
 
+//#region   MAJOR ROUTES
+
+app.get("/:schoolCode/olahuakbar", async function (req, res) {
+    const schoolCode= req.params.schoolCode;
+    console.log("School name: ", schoolCode);
+    res.render("indexOla.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
+})
+
 app.get("/", function (req, res) {
     res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: 'dps01'});
 })
@@ -417,30 +425,26 @@ app.get("/highAlert", function (req, res) {
     res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: 'dps01'})
 })
 
-app.get("/:schoolCode/principal", async function (req, res) {
-    const schoolCode= req.params.schoolCode;
-    console.log("School name: ", schoolCode);
-    res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
-})
+// app.get("/:schoolCode/principal", async function (req, res) {
+//     const schoolCode= req.params.schoolCode;
+//     console.log("School name: ", schoolCode);
+//     res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
+// })
 
-app.get("/:schoolCode/tracking", async function (req, res) {
-    const schoolCode= req.params.schoolCode;
-    console.log("School name: ", schoolCode);
-    res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
-})
+// app.get("/:schoolCode/tracking", async function (req, res) {
+//     const schoolCode= req.params.schoolCode;
+//     console.log("School name: ", schoolCode);
+//     res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
+// })
 
-app.get("/:schoolCode/olahuakbar", async function (req, res) {
-    const schoolCode= req.params.schoolCode;
-    console.log("School name: ", schoolCode);
-    res.render("indexOla.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
-})
-
-app.get("/:schoolCode/high-alert", async function (req, res) {
-    const schoolCode= req.params.schoolCode;
-    console.log("School name: ", schoolCode);
-    res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
-})
+// app.get("/:schoolCode/high-alert", async function (req, res) {
+//     const schoolCode= req.params.schoolCode;
+//     console.log("School name: ", schoolCode);
+//     res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
+// })
 
 app.listen(port, function() {
     console.log("Server listening on port:", port);
 })
+
+//#endregion
