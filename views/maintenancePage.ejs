@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Upgrade in Progress</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 min-h-screen">
+    <!-- Navigation Bar with Clock -->
+    <div class="fixed top-0 left-0 right-0 bg-black/30 backdrop-blur-lg border-b border-green-500/30">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <svg class="w-8 h-8 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+                <span id="school-name" class="text-green-100 font-semibold text-lg">MyKawach Certified School</span>
+            </div>
+            <div class="flex items-center space-x-6">
+                <div id="maintenanceProgress" class="text-green-300 text-sm font-mono"></div>
+                <div id="clock" class="text-green-400 font-mono text-xl"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-3xl mx-auto pt-24 p-4">
+        <!-- Main Content Card -->
+        <div class="bg-black/30 backdrop-blur-lg rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-green-500/30">
+            <!-- Decorative Elements -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full -mr-32 -mt-32"></div>
+            <div class="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-green-500/10 to-emerald-500/10 rounded-full -ml-24 -mb-24"></div>
+
+            <div class="relative">
+                <!-- Hero SVG -->
+                <svg class="w-48 h-48 mx-auto mb-8" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Shield Base -->
+                    <path d="M100 20 L180 60 V100 C180 150 100 180 100 180 C100 180 20 150 20 100 V60 L100 20Z" fill="#059669" />
+                    <!-- Inner Shield -->
+                    <path d="M100 35 L165 68 V100 C165 140 100 165 100 165 C100 165 35 140 35 100 V68 L100 35Z" fill="#10b981" />
+                    <!-- House -->
+                    <path d="M100 70 L130 95 V125 H70 V95 L100 70Z" fill="white"/>
+                    <!-- Heart -->
+                    <!-- <path d="M95 105 C95 105 85 95 75 95 C65 95 60 105 60 110 C60 125 95 135 95 135 C95 135 130 125 130 110 C130 105 125 95 115 95 C105 95 95 105 95 105Z" fill="#ef4444"/> -->
+                </svg>
+
+                <h1 class="text-4xl font-bold text-green-100 mb-6 text-center">System Upgrade in Progress</h1>
+
+                <!-- Time Progress Bar -->
+                <div class="bg-black/30 rounded-xl p-6 mb-1">
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-sm text-green-300 mb-2">
+                            <span>Maintenance Progress</span>
+                            <span id="percentageComplete">0%</span>
+                        </div>
+                        <div class="h-4 bg-green-900/50 rounded-full overflow-hidden">
+                            <div id="progressBar" class="h-full bg-gradient-to-r from-green-500 to-emerald-400 w-0 transition-all duration-1000"></div>
+                        </div>
+                        <div class="flex justify-between text-sm text-green-400">
+                            <span>Started: Nov 20, 2024</span>
+                            <span>Ends: Nov 23, 2024</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
+                    <div class="bg-black/30 rounded-xl p-6">
+                        <h3 class="text-xl font-semibold text-green-300 mb-4">System Updates</h3>
+                        <ul class="space-y-3 text-green-200">
+                            <li class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-green-100 rounded-full animate-pulse"></div>
+                                <span>Enhanced Security Features</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                <span>Performance Optimization</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-black/30 rounded-xl p-6">
+                        <h3 class="text-xl font-semibold text-green-300 mb-4">Status Updates</h3>
+                        <div class="space-y-3 text-green-200">
+                            <p class="flex items-center space-x-2">
+                                <span class="text-green-400">●</span>
+                                <span>Database Migration</span>
+                            </p>
+                            <p class="flex items-center space-x-2">
+                                <span class="text-yellow-400">●</span>
+                                <span>Security Protocols Update</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact -->
+                <!-- <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-6 text-center">
+                    <p class="text-green-300 font-medium">
+                        Need urgent assistance? Our support team is available 24/7
+                    </p>
+                    <button class="mt-4 px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                        Contact Support
+                    </button>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const schoolCode= "<%= schoolCode %>";
+        fetch(`http://49.50.119.238:3000/api/Admin/GetSchoolDataByCode/${schoolCode}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok " + response.statusText);
+            }
+            return response.json(); // Parse the JSON data
+        })
+        .then(data => {
+            // Assuming 'schoolName' exists in the returned JSON object
+            const schoolName = data.schoolName;
+
+            // Find the span by its ID and update its text
+            const schoolNameSpan = document.getElementById("school-name");
+            if (schoolName) {
+                schoolNameSpan.innerText = `${schoolName}`;
+            } else {
+                console.error("schoolName key is not found in the response");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching the API:", error);
+        });
+
+        // Update clock
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Update maintenance progress
+        function updateProgress() {
+            const startDate = new Date('2024-11-20T00:00:00');
+            const endDate = new Date('2024-11-23T23:59:59');
+            const now = new Date();
+            
+            const total = endDate - startDate;
+            const elapsed = now - startDate;
+            const percentage = Math.min(Math.max((elapsed / total) * 100, 0), 100);
+            
+            const progressBar = document.getElementById('progressBar');
+            const percentageComplete = document.getElementById('percentageComplete');
+            const maintenanceProgress = document.getElementById('maintenanceProgress');
+            
+            progressBar.style.width = `${percentage}%`;
+            percentageComplete.textContent = `${percentage.toFixed(1)}%`;
+            
+            const remainingTime = endDate - now;
+            const remainingHours = Math.max(Math.floor(remainingTime / (1000 * 60 * 60)), 0);
+            const remainingMinutes = Math.max(Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60)), 0);
+            
+            maintenanceProgress.textContent = `Maintenance Time Remaining: ${remainingHours}h ${remainingMinutes}m`;
+        }
+
+        // Update every second
+        setInterval(updateClock, 1000);
+        setInterval(updateProgress, 1000);
+        updateClock();
+        updateProgress();
+    </script>
+</body>
+</html>

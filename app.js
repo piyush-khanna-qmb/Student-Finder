@@ -425,26 +425,191 @@ app.get("/highAlert", function (req, res) {
     res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: 'dps01'})
 })
 
-// app.get("/:schoolCode/principal", async function (req, res) {
-//     const schoolCode= req.params.schoolCode;
-//     console.log("School name: ", schoolCode);
-//     res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
-// })
+app.get("/:schoolCode/principal", async function (req, res) {
+    const schoolCode= req.params.schoolCode;
+    console.log("School name: ", schoolCode);
+    res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
+    // res.render("maintenancePage.ejs", { schoolCode: schoolCode})
+})
 
-// app.get("/:schoolCode/tracking", async function (req, res) {
-//     const schoolCode= req.params.schoolCode;
-//     console.log("School name: ", schoolCode);
-//     res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
-// })
+app.get("/:schoolCode/tracking", async function (req, res) {
+    const schoolCode= req.params.schoolCode;
+    console.log("School name: ", schoolCode);
+    res.render("index2.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
+    // res.render("maintenancePage.ejs", { schoolCode: schoolCode})
+})
 
-// app.get("/:schoolCode/high-alert", async function (req, res) {
-//     const schoolCode= req.params.schoolCode;
-//     console.log("School name: ", schoolCode);
-//     res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
-// })
+app.get("/:schoolCode/high-alert", async function (req, res) {
+    const schoolCode= req.params.schoolCode;
+    console.log("School name: ", schoolCode);
+    res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: schoolCode})
+    // res.render("maintenancePage.ejs", { schoolCode: schoolCode})
+})
 
 app.listen(port, function() {
     console.log("Server listening on port:", port);
 })
 
 //#endregion
+
+//#region Fake Move
+
+const monthDict = {
+    '01': 'January', '02': 'February', '03': 'March', '04': 'April',
+    '05': 'May', '06': 'June', '07': 'July', '08': 'August',
+    '09': 'September', '10': 'October', '11': 'November', '12': 'December'
+};
+
+async function insertDataForUser(insertableData) {
+    const imei = insertableData.imei;
+    console.log(`Searching for user with IMEI: ${imei}`);
+    
+    const user = await User.findOne({ imei: imei });
+    
+    if (!user) {
+        console.log(`IMEI ${imei} not linked with a user yet.`);
+        return;
+    }
+
+    console.log(`User found with IMEI: ${imei}`);
+    const newData = {
+        latitude: parseFloat(insertableData.lat),
+        longitude: parseFloat(insertableData.lng),
+        altitude: 0,
+        timestamp: insertableData.time,
+        battery: parseFloat(insertableData.battery),
+        speed: parseFloat(insertableData.speed),
+        signalStrength: parseFloat(insertableData.signal)
+    };
+
+    await User.updateOne(
+        { imei: imei },
+        {
+            $push: {
+                last50kData: {
+                    $each: [newData],
+                    $position: 0,
+                    $slice: 50
+                }
+            }
+        }
+    );
+    console.log(`New data added to user with IMEI: ${imei}`);
+}
+
+const locationPoints = {
+    man: {
+        imei: 861261027107081,
+        lat: '28.615695422324865',
+        lng: '77.37450595390965',
+        speed: 40,
+        time: '2024/10/04 11:47:50',
+        battery: 68,
+        signal: 20
+    },
+    point0: {
+        imei: 861261027107081,
+        lat: '28.61532810689114',
+        lng: '77.37329359543004',
+        speed: 40,
+        time: '2024/10/04 11:47:50',
+        battery: 68,
+        signal: 15
+    },
+    pointA: {
+        imei: 861261027107081,
+        lat: '28.617808776950845',
+        lng: '77.37355659957929',
+        speed: 40,
+        time: '2024/10/04 11:47:50',
+        battery: 68,
+        signal: 20
+    },
+    pointB: {
+        imei: 861261027107081,
+        lat: '28.617921794551414',
+        lng: '77.36426542751408',
+        speed: 40,
+        time: '2024/10/04 11:47:50',
+        battery: 68,
+        signal: 20
+    },
+    pointC: {
+        imei: 861261027107081,
+        lat: '28.61807248449627',
+        lng: '77.35506008613771',
+        speed: 40,
+        time: '2024/10/04 11:47:50',
+        battery: 68,
+        signal: 20
+    },
+    indus: {
+        imei: 861261027107081,
+        lat: '28.618769422675815',
+        lng: '77.35506008614057',
+        speed: 40,
+        time: '2024/10/04 11:47:50',
+        battery: 68,
+        signal: 20
+    }
+};
+
+// Helper function for delay
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+app.get('/api/move/:location', async (req, res) => {
+    try {
+        const location = req.params.location.toLowerCase();
+        if (locationPoints[location]) {
+            await insertDataForUser(locationPoints[location]);
+            let msgg = location=="man" ? `Moving marker to Manojava` : `Moving marker to Indus School`;
+            res.json({ success: true, message: `${msgg}` });
+        } else {
+            res.status(400).json({ success: false, message: 'Invalid location' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.get('/api/route/manojavaToIndus', async (req, res) => {
+    try {
+        await insertDataForUser(locationPoints.point0);
+        await delay(10000);
+        await insertDataForUser(locationPoints.pointA);
+        await delay(15000);
+        await insertDataForUser(locationPoints.pointB);
+        await delay(40000);
+        await insertDataForUser(locationPoints.pointC);
+        await delay(40000);
+        await insertDataForUser(locationPoints.indus);
+        
+        res.json({ success: true, message: 'Route manojavaToIndus completed' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.get('/api/route/indusToMan', async (req, res) => {
+    try {
+        await insertDataForUser(locationPoints.indus);
+        await delay(10000);
+        await insertDataForUser(locationPoints.pointC);
+        await delay(15000);
+        await insertDataForUser(locationPoints.pointB);
+        await delay(40000);
+        await insertDataForUser(locationPoints.pointA);
+        await delay(40000);
+        await insertDataForUser(locationPoints.point0);
+        await delay(20000);
+        await insertDataForUser(locationPoints.man);
+        
+        res.json({ success: true, message: 'Route indusToMan completed' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.get('/simulator', (req, res) => {
+    res.render('simulator');
+});

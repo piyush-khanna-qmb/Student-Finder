@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Simulator</title>
+    <link rel="stylesheet" href="../views/simulator.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Location Simulator</h1>
+        <div class="button-container">
+            <button onclick="makeRequest('/api/move/man')">Jump to Manojava Software</button>
+            <button onclick="makeRequest('/api/move/indus')">Jump to Indus Public School</button>
+            <button onclick="makeRequest('/api/route/manojavaToIndus')">Manojava to Indus</button>
+            <button onclick="makeRequest('/api/route/indusToMan')">Indus to Manojava</button>
+        </div>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        function disableAllButtons(disable) {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = disable);
+        }
+
+        function showStatus(message, isError = false) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            statusDiv.className = isError ? 'error' : 'success';
+        }
+
+        async function makeRequest(url) {
+            disableAllButtons(true);
+            showStatus('Processing request... The marker will start moving soon!');
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus(data.message);
+                } else {
+                    showStatus(data.message || 'An error occurred', true);
+                }
+            } catch (error) {
+                showStatus('Failed to complete the request', true);
+            } finally {
+                disableAllButtons(false);
+            }
+        }
+    </script>
+</body>
+</html>
