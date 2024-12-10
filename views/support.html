@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Professional Support Center</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", "Arial", sans-serif;
+        line-height: 1.6;
+        background-color: #f4f7f6;
+        color: #2c3e50;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        text-align: center;
+        padding: 30px;
+        margin-bottom: 30px;
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .header h1 {
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .accordion {
+        background-color: white;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .accordion:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        transform: translateY(-5px);
+      }
+
+      .accordion-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 25px;
+        background-color: #ecf0f1;
+        cursor: pointer;
+        border-bottom: 1px solid #e0e4e6;
+        transition: background-color 0.3s ease;
+      }
+
+      .accordion-header:hover {
+        background-color: #e6eaed;
+      }
+
+      .accordion-header h3 {
+        color: #34495e;
+        font-weight: 500;
+      }
+
+      .accordion-content {
+        display: none;
+        padding: 25px;
+        background-color: white;
+        color: #2c3e50;
+      }
+
+      .accordion-icon {
+        color: #3498db;
+        transition: transform 0.3s ease;
+      }
+
+      .accordion-header.active .accordion-icon {
+        transform: rotate(180deg);
+      }
+
+      .support-form {
+        background-color: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .support-form h2 {
+        color: #2c3e50;
+        margin-bottom: 25px;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .support-form input,
+      .support-form textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #bdc3c7;
+        border-radius: 6px;
+        transition: border-color 0.3s ease;
+      }
+
+      .support-form input:focus,
+      .support-form textarea:focus {
+        outline: none;
+        border-color: #3498db;
+      }
+
+      .support-form button {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .support-form button:hover {
+        background: linear-gradient(135deg, #2980b9, #3498db);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px);
+      }
+
+      @media screen and (max-width: 768px) {
+        .container {
+          width: 95%;
+          padding: 10px;
+        }
+
+        .header {
+          padding: 20px;
+        }
+
+        .accordion-header {
+          padding: 15px;
+        }
+
+        .support-form {
+          padding: 25px;
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .header {
+          font-size: 0.9em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>MyKawach Support Center</h1>
+        <p>We're here to solve your problems efficiently</p>
+      </div>
+
+      <!-- Accordions with updated text -->
+      <div class="accordion">
+        <div class="accordion-header">
+          <h3>Getting Started Guide</h3>
+          <i class="fas fa-chevron-down accordion-icon"></i>
+        </div>
+        <div class="accordion-content">
+          <p>
+            To learn how to use the app, please refer to our step-by-step guide
+            available in the app's Help section. <br> Video Tutorial Link:
+            [Coming Soon]<br>Ensure notification permissions are enabled and
+            battery optimization is turned off for the app to receive timely
+            alerts.
+          </p>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <h3>Location Tracking & Accuracy</h3>
+          <i class="fas fa-chevron-down accordion-icon"></i>
+        </div>
+        <div class="accordion-content">
+          <p>
+            The accuracy depends on GPS signal and network coverage, typically
+            within a few meters in open areas. If the GPS device is turned off,
+            the last known location will remain visible until the device is
+            powered on again. You can track multiple Kawach devices
+            simultaneously, with each child displayed on the map.
+          </p>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <h3>User Profile Management</h3>
+          <i class="fas fa-chevron-down accordion-icon"></i>
+        </div>
+        <div class="accordion-content">
+          <p>
+            To manage user profiles: <br>
+            <ul>
+                <li>Add new users through the Add New User button in the Users section</li>
+                <li>Edit child information in the Users tab</li>
+                <li>Ensure app has photo gallery permissions for profile pictures.</li>
+                <li>All information is stored locally for privacy.</li>
+            </ul>
+          </p>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header">
+          <h3>Troubleshooting</h3>
+          <i class="fas fa-chevron-down accordion-icon"></i>
+        </div>
+        <div class="accordion-content">
+          <p>
+            Common issues and solutions: <br>
+            <ul>
+                <li>Missing notifications: Check app permissions and battery settings</li>
+                <li>Map marker issues: Verify user information in Users section</li>
+                <li>Location accuracy: Ensure device has clear sky view</li>
+                <li>Device offline: Check if the GPS device is powered on and has network coverage</li>
+            </ul>
+          </p>
+        </div>
+      </div>
+
+      <!-- Support Request Form -->
+      <div class="support-form">
+        <h2>Request Professional Support</h2>
+        <form id="supportForm">
+          <input
+            type="text"
+            name="name"
+            placeholder="Your Full Name"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Professional Email Address"
+            required
+          />
+          <input type="tel" name="phone" placeholder="Contact Phone Number" />
+          <textarea
+            name="message"
+            placeholder="Describe your technical issue or support requirement in detail..."
+            rows="5"
+            required
+          ></textarea>
+          <button type="submit">Submit Support Request</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Accordion Functionality
+      document.querySelectorAll(".accordion-header").forEach((header) => {
+        header.addEventListener("click", () => {
+          // Close all other open accordions
+          document.querySelectorAll(".accordion-header").forEach((h) => {
+            if (h !== header) {
+              h.classList.remove("active");
+              h.nextElementSibling.style.display = "none";
+            }
+          });
+
+          // Toggle current accordion
+          header.classList.toggle("active");
+          const content = header.nextElementSibling;
+          content.style.display =
+            content.style.display === "block" ? "none" : "block";
+        });
+      });
+
+      // Form Submission Handler
+      document
+        .getElementById("supportForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          alert(
+            "Support request submitted successfully! Our team will review and respond promptly."
+          );
+          this.reset(); // Clear form after submission
+        });
+    </script>
+  </body>
+</html>

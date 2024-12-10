@@ -137,6 +137,32 @@ app.post("/internal/api/v1/getCoordinatesByKawachID", async function (req, res) 
         return res.status(500).json({ error: err.message });
     }
 })
+app.post("/internal/api/v1/getCoordinatesInBundle", async function (req, res) {
+    var returnBundle = [];
+    try {
+        const kawaches = req.body.kawachID;
+        
+        // Use Promise.all to handle multiple async operations concurrently
+        returnBundle = await Promise.all(kawaches.map(async (kawachId) => {
+            const user = await User.findOne({ kawachId: kawachId });
+            
+            if (user && user.last50kData && user.last50kData.length > 0) {
+                const { latitude, longitude } = user.last50kData[0];
+                return { position: { lat: latitude, lng: longitude }};
+            } else {
+                const raandLat = getRandomLoc(28.87, 28.88);
+                const raandLng = getRandomLoc(77.60, 77.63);
+                return { rand: true, position: { lat: raandLat, lng: raandLng }};
+            }
+        }));
+
+        return res.status(200).json({ returnBundle });
+        
+    } catch (err) {
+        console.error('Error processing kawach IDs:', err.message);
+        return res.status(500).json({ returnBundle });
+    }
+});
 
 app.post('/coordinates', async (req, res) => {
     try {
@@ -423,6 +449,10 @@ app.get("/", function (req, res) {
 
 app.get("/highAlert", function (req, res) {
     res.render("highalert.ejs", {API_KEY: API_KEY, schoolCode: 'dps01'})
+})
+
+app.get("/support", function (req, res) {
+    res.render("support.ejs");
 })
 
 app.get("/:schoolCode/principal", async function (req, res) {

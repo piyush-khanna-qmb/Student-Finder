@@ -9,7 +9,7 @@ var schoolRad, schoolCentre;
 var schoolMarkerIcon;
 var lastZoom, lastCenter;
 
-const toggleButton = document.getElementById('toggleButton');
+// const toggleButton = document.getElementById('toggleButton');
 const listContainer = document.getElementById('listContainer');
 let isOn = false;
 
@@ -344,21 +344,21 @@ async function initMap() {
     // Initialize the map centered at some default location
     showLoading();
 
-    toggleButton.addEventListener('click', () => {
-      isOn = !isOn;
+    // toggleButton.addEventListener('click', () => {
+    //   isOn = !isOn;
       
-      toggleButton.classList.toggle('on', isOn);
-      if (isOn) {
-          listContainer.classList.remove('hidden');
-      } else {
-          listContainer.classList.add('hidden');
-      }
-    });
+    //   toggleButton.classList.toggle('on', isOn);
+    //   if (isOn) {
+    //       listContainer.classList.remove('hidden');
+    //   } else {
+    //       listContainer.classList.add('hidden');
+    //   }
+    // });
 
     map = new google.maps.Map(document.getElementById("map"), {
       zoom: 10,
       center: {lat: 28.615816, lng: 77.3748894},
-      styles: kawachDarkThemeMap
+      styles: nightStyle
     });
     
     schoolMarkerIcon = {
@@ -421,40 +421,42 @@ function isInsideCircle(position, center, radius) {
 }
 
 var initialSetup= true;
-
 async function getStudentsData1() {  
   var schoolId1;
   try {
     const url = `http://49.50.119.238:3000/api/Admin/GetSchoolDataByCode/${schoolCode}`;
   
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-          throw new Error(`Error: ${response.status} ${response.statusText}`);
-      }
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
 
-      const data = await response.json();
-      schoolId1= data.schoolId; // Extract schoolId from the response
+    const data = await response.json();
+    schoolId1 = data.schoolId;
   } catch (error) {
-      console.error('Failed to fetch school data:', error);
+    console.error('Failed to fetch school data:', error);
+    throw error;
   }
 
   const response = await fetch(`http://49.50.119.238:3000/api/Admin/GetAllStudentInfoData/${schoolId1}`);
   return await response.json();
 }
 
-// Function to post and get location data for a specific student by kawachID
-async function getLocation1(kawachID) {
-  // console.log(kawachID);
+// Updated function to get locations for multiple students at once
+async function getLocationsInBulk(students) {
+  const kawachIDs = students.map(student => student.kawachId);
   
-  const response = await fetch('/internal/api/v1/getCoordinatesByKawachID', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ kawachID }) // Send the kawachID in the body
+  const response = await fetch('/internal/api/v1/getCoordinatesInBundle', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ kawachID: kawachIDs })
   });
-  return await response.json();
+  
+  const data = await response.json();
+  return data.returnBundle;
 }
 
 var items= []; 
@@ -476,7 +478,69 @@ function renderList(items) {
   }
 }
 
+async function getStudentByKawachID(kawachID) {
+  try {
+      const response = await fetch(`http://49.50.119.238:3000/api/Admin/getStudentByKawachID/${kawachID}`);
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+  } catch (error) {
+      console.error('Error fetching student details:', error);
+      throw error;
+  }
+}
+
+async function updatePopupWithImage(marker, kawachID) {
+  try {
+    
+      const imageContainer = document.getElementById(`student-image-${kawachID}`);
+      if (!imageContainer) {
+          console.error('Image container not found');
+          return;
+      }
+
+      const existingImage = imageContainer.querySelector('img');
+      if (existingImage && existingImage.src.includes('pngtree')) { // Check if it's still the placeholder
+          const studentDetails = await getStudentByKawachID(kawachID);
+          console.log("Mil gya: ", studentDetails);
+          
+          if (studentDetails.imageUrl) {
+              existingImage.src = studentDetails.imageUrl;
+              existingImage.onerror = function() {
+                  existingImage.src = "https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png";
+              };
+          }
+      }
+      else {
+        console.log("Already photo lagi hai");
+      }
+  } catch (error) {
+      console.error('Error loading student image:', error);
+  }
+}
+
 async function placeMarkers(shouldBound) {
+
+  const loadingSpinnerHtml = `
+        <div class="loading-spinner" style="
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        ">
+        </div>
+        <style>
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    `;
     let safeKidsCount= 0, unsafeKidsCount= 0;
 
     const bounds = new google.maps.LatLngBounds(); 
@@ -494,17 +558,19 @@ async function placeMarkers(shouldBound) {
         url: 'https://cdn-icons-png.flaticon.com/512/7334/7334593.png', 
         scaledSize: new google.maps.Size(40, 40) 
     };
-    var dataObjectList; 
     try {
+        // Get all students
         const students = await getStudentsData1();
         
-        dataObjectList = await Promise.all(students.map(async student => {
-            const locData = await getLocation1(student.kawachId);
-            return {
-                ...student,
-                position: locData.position 
-            };
+        // Get locations for all students in one request
+        const locations = await getLocationsInBulk(students);
+        
+        // Combine student data with their locations
+        const dataObjectList = students.map((student, index) => ({
+          ...student,
+          position: locations[index].position
         }));
+        
         if(!currentInfoWindow) {
           // console.log("Nothing's open");
           clearMarkers();
@@ -538,130 +604,108 @@ async function placeMarkers(shouldBound) {
   
             const finalDataImg = data.imageUrl ? data.imageUrl : "https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png";
             const studentsClass= data.className.replace(/^class/i, '');
-            const safePopupContent = `
+            const createPopupContent = (imageUrl, isLoading = false) => `
             <table class="mainTable">
-                    <tr>
-                        <td>
-                            <div class="custom-popup safeKid">
-                                <button class="infoBut"><i class="fa-solid fa-info"></i></button>
-                                <img src="${finalDataImg}" alt="Image"/>
-                                <h3>${data.studentName}</h3>
-                                <p style="margin-bottom: 3px">Latitude: ${data.position.lat}</p>
-                                <p style="margin-top: 0px">Longitude: ${data.position.lng}</p>
-                            </div>
-                        </td>
-    
-                        <td>
-                            <div class="excessInfo">
-                                <h4>Academic Details</h4>
-                                <p> Class: ${studentsClass} - ${data.sectionName}<br>
-                                    Roll No: ${data.classRollNo} <br>
-                                    Kawach ID: ${data.kawachId}</p>
-                                <h4>Parent's Details</h4>
-                                <p>Father's Name: ${data.fatherName}  <br>
-                                   Mother's Name: ${data.motherName}</p>
-                                <h4>Contact Details</h4>
-                                <p>Mobile No.: ${data.mobileNo} </br>
-                                Alternate No.: ${data.alternateNo} </br> </p>
-                                <p>Address: ${data.address} <br>
-                                Email: ${data.emailId} </p>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            `;
-        
-            const unsafePopupContent = `
-                <table class="mainTable">
-                    <tr>
-                        <td>
-                            <div class="custom-popup unsafeKid">
-                                <button class="infoBut"><i class="fa-solid fa-info"></i></button>
-                                <img src="${finalDataImg}" alt="Image"/>
-                                <h3>${data.studentName}</h3>
-                                <p style="margin-bottom: 3px">Latitude: ${data.position.lat}</p>
-                                <p style="margin-top: 0px">Longitude: ${data.position.lng}</p>
-                            </div>
-                        </td>
-    
-                        <td>
-                            <div class="excessInfo">
-                                <h4>Academic Details</h4>
-                                <p> Class: ${studentsClass} - ${data.sectionName}<br>
-                                    Roll No: ${data.classRollNo} <br>
-                                    Kawach ID: ${data.kawachId}</p>
-                                <h4>Parent's Details</h4>
-                                <p>Father's Name: ${data.fatherName}  <br>
-                                   Mother's Name: ${data.motherName}</p>
-                                <h4>Contact Details</h4>
-                                <p>Mobile No.: ${data.mobileNo} </br>
-                                Alternate No.: ${data.alternateNo} </br> </p>
-                                <p>Address: ${data.address} <br>
-                                Email: ${data.emailId} </p>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                `;
-    
-            const infoWindow = new google.maps.InfoWindow({
-                content: isSafe ? safePopupContent : unsafePopupContent,
-            });
-    
-            marker.addListener('click', function () {
-                if (currentMarker === marker) {
-                    if (currentInfoWindow) {
-                        removeEventListener('click', currentInfoBut);
-                        currentInfoBut = null;
-                        currentInfoWindow.close();
-                        currentInfoWindow = null;
-                        currentMarker = null;
-                    }
-                } else {
-                
-                    if (currentInfoWindow) {
-                        removeEventListener('click', currentInfoBut);
-                        currentInfoBut = null;
-                        currentInfoWindow.close(); 
-                    }
-            
-                    infoWindow.open(map, marker);
-                    currentInfoWindow = infoWindow;
-                    currentMarker = marker;
-  
-                    google.maps.event.addListener(infoWindow, 'closeclick', function() {
-                      currentInfoWindow = null; // Reset the currentInfoWindow
+                <tr>
+                    <td>
+                        <div id="student-image-${data.kawachId}" class="custom-popup ${isSafe ? 'safeKid' : 'unsafeKid'}">
+                            <button class="infoBut"><i class="fa-solid fa-info"></i></button>
+                            ${isLoading ? loadingSpinnerHtml : `<img src="${imageUrl}" alt="Student Photo" class="student-photo"/>`}
+                            <h3>${data.studentName}</h3>
+                            <p style="margin-bottom: 3px">Latitude: ${data.position.lat}</p>
+                            <p style="margin-top: 0px">Longitude: ${data.position.lng}</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="excessInfo">
+                            <h4>Academic Details</h4>
+                            <p> Class: ${studentsClass} - ${data.sectionName}<br>
+                                Roll No: ${data.classRollNo} <br>
+                                Kawach ID: ${data.kawachId}</p>
+                            <h4>Parent's Details</h4>
+                            <p>Father's Name: ${data.fatherName}  <br>
+                               Mother's Name: ${data.motherName}</p>
+                            <h4>Contact Details</h4>
+                            <p>Mobile No.: ${data.mobileNo} </br>
+                            Alternate No.: ${data.alternateNo} </br> </p>
+                            <p>Address: ${data.address} <br>
+                            Email: ${data.emailId} </p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        `;
+
+          const infoWindow = new google.maps.InfoWindow({
+              content: createPopupContent("https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png", true)
+          });
+
+          marker.addListener('click', async function () {
+              if (currentMarker === marker) {
+                  if (currentInfoWindow) {
+                      removeEventListener('click', currentInfoBut);
+                      currentInfoBut = null;
+                      currentInfoWindow.close();
+                      currentInfoWindow = null;
+                      currentMarker = null;
+                  }
+              } else {
+                  if (currentInfoWindow) {
+                      removeEventListener('click', currentInfoBut);
+                      currentInfoBut = null;
+                      currentInfoWindow.close();
+                  }
+
+                  // Open info window with loading spinner
+                  infoWindow.open(map, marker);
+                  currentInfoWindow = infoWindow;
+                  currentMarker = marker;
+
+                  try {
+                      // Fetch student details while showing loading spinner
+                      const studentDetails = await getStudentByKawachID(data.kawachId);
+                      const imageUrl = studentDetails.imageUrl || "https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png";
+                      
+                      // Update content with actual image
+                      infoWindow.setContent(createPopupContent(imageUrl, false));
+
+                      // Reattach event listeners after content update
+                      google.maps.event.addListenerOnce(infoWindow, 'domready', function() {
+                          const infoButton = document.querySelector('.infoBut');
+                          const excessInfoDiv = document.querySelector('.excessInfo');
+
+                          if (infoButton && excessInfoDiv) {
+                              infoButton.addEventListener('click', function() {
+                                  if (excessInfoDiv.style.display == "block") {
+                                      excessInfoDiv.style.display = "none";
+                                      if (currentInfoWindow) {
+                                          google.maps.event.clearListeners(currentInfoWindow, 'domready');
+                                          currentInfoWindow.close();
+                                          currentInfoWindow = null;
+                                          currentMarker = null;
+                                      }
+                                  } else {
+                                      excessInfoDiv.style.display = "block";
+                                  }
+                                  currentInfoBut = infoButton;
+                              });
+                          }
+                      });
+                  } catch (error) {
+                      console.error('Error loading student image:', error);
+                      infoWindow.setContent(createPopupContent("https://png.pngtree.com/png-clipart/20221207/ourmid/pngtree-business-man-avatar-png-image_6514640.png", false));
+                  }
+
+                  google.maps.event.addListener(infoWindow, 'closeclick', function() {
+                      currentInfoWindow = null;
                       currentMarker = null;
                   });
-                }
-            });
-            google.maps.event.addListenerOnce(infoWindow, 'domready', function() {
-                const infoButton = document.querySelector('.infoBut');
-                const excessInfoDiv = document.querySelector('.excessInfo');
-    
-                if (infoButton && excessInfoDiv) {
-                    infoButton.addEventListener('click', function() {                    
-                        if (excessInfoDiv.style.display == "block") {
-                            excessInfoDiv.style.display = "none";
-                            if (currentInfoWindow) {
-                              google.maps.event.clearListeners(currentInfoWindow, 'domready');
-                              currentInfoWindow.close();
-                              currentInfoWindow = null;
-                              currentMarker = null;
-                          }
-                            
-                        } else {
-                            excessInfoDiv.style.display = "block";
-                        }
-                        currentInfoBut= infoButton;
-                    });
-                }
-              });
-            }
-          
-      });
-      if(shouldBound)
-        map.fitBounds(bounds); 
+              }
+          });
+        }
+        if(shouldBound)
+          map.fitBounds(bounds); 
+    });
 
       // console.log(`Safe Kids: ${safeKidsCount}\nUnsafe Kids: ${unsafeKidsCount}`);
     } catch (error) {
