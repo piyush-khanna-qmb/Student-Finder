@@ -358,7 +358,8 @@ async function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
       zoom: 10,
       center: {lat: 28.615816, lng: 77.3748894},
-      styles: nightStyle
+      styles: nightStyle,
+      
     });
     
     schoolMarkerIcon = {
@@ -714,3 +715,30 @@ async function placeMarkers(shouldBound) {
     }
 }
 
+const slider = document.getElementById("distanceSlider");
+const display = document.getElementById("sliderValue");
+
+function handleSliderChange(event) {
+    const value = event.target.value;
+    display.textContent = value;
+    
+    // Update slider background based on value
+    const percentage = (value / 4000) * 100;
+    slider.style.background = `linear-gradient(to right, 
+        var(--highlight-green) 0%, 
+        var(--highlight-green) ${percentage}%, 
+        var(--light-military-green) ${percentage}%, 
+        var(--light-military-green) 100%)`;
+    
+    updateDistance(value);
+}
+
+function updateDistance(distance) {
+    console.log(`Distance changed to: ${distance} meters`);
+    // Add your custom logic here
+}
+
+slider.addEventListener('input', handleSliderChange);
+
+// Initialize slider background
+handleSliderChange({ target: { value: slider.value } });

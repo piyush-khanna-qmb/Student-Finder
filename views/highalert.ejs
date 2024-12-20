@@ -35,6 +35,33 @@
     <!-- <div class="infoTab">
         <p></p>
     </div> -->
+
+      <div class="slider-container">
+        <div class="military-header">
+          DISTANCE RANGE CONTROL
+        </div>
+        
+        <div class="range-container">
+          <div class="milestones">
+            <span class="milestone">0km</span>
+            <span class="milestone">1km</span>
+            <span class="milestone">2km</span>
+            <span class="milestone">3km</span>
+            <span class="milestone">4km</span>
+          </div>
+          <input type="range" 
+                 id="distanceSlider" 
+                 min="0" 
+                 max="4000" 
+                 value="0" 
+                 step="100"
+                 class="slider">
+          <div class="value-display">
+            Range: <span id="sliderValue">0</span> meters
+          </div>
+        </div>
+      </div>
+
     <script>
         const schoolCode = "<%=schoolCode%>";
     </script>

@@ -40,7 +40,12 @@ const userSchema = new mongoose.Schema({
     last50kData: [dataSchema] 
 }, { collection: 'user' });
 
+const versionSchema = new mongoose.Schema({
+    minRequiredVersion: { type: String }
+}, { collection: 'version' });
+
 const User = mongoose.model('User', userSchema);
+const Version = mongoose.model('Version', versionSchema);
 //#endregion
 
 // #region HELPER FUNCTIONS
@@ -191,7 +196,7 @@ app.post('/checkedCoordinates', async (req, res) => {
         if (user) {
             const sortedData = user.last50kData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-            fetch(`http://49.50.119.238:3000/api/Admin/GetStudentByKawachId/${kawachId}`, {
+            fetch(`https://api.mykawach.com/api/Admin/GetStudentByKawachId/${kawachId}`, {
                 method: 'GET',
                 headers: { 'Accept': '*/*' }
             })
@@ -202,6 +207,8 @@ app.post('/checkedCoordinates', async (req, res) => {
             .then(data => {
                 if(data.schoolCode == comingSchoolCode) {
                     if (sortedData.length > 0) {
+                        console.log(sortedData[0]);
+                        
                         const { latitude, longitude } = sortedData[0];
                         return res.json({ lat: latitude, lng: longitude });
                     } else {
@@ -527,58 +534,72 @@ async function insertDataForUser(insertableData) {
     console.log(`New data added to user with IMEI: ${imei}`);
 }
 
+function getFormattedTime22() {
+    const now = new Date();
+    
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(now.getDate()).padStart(2, '0');
+    
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    
+    return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+}
+
 const locationPoints = {
     man: {
-        imei: 861261027107081,
+        imei: 861261027105820,
         lat: '28.615695422324865',
         lng: '77.37450595390965',
-        speed: 40,
-        time: '2024/10/04 11:47:50',
+        speed: 10,
+        time: getFormattedTime22(),
         battery: 68,
         signal: 20
     },
     point0: {
-        imei: 861261027107081,
+        imei: 861261027105820,
         lat: '28.61532810689114',
         lng: '77.37329359543004',
-        speed: 40,
-        time: '2024/10/04 11:47:50',
+        speed: 20,
+        time: getFormattedTime22(),
         battery: 68,
         signal: 15
     },
     pointA: {
-        imei: 861261027107081,
+        imei: 861261027105820,
         lat: '28.617808776950845',
         lng: '77.37355659957929',
         speed: 40,
-        time: '2024/10/04 11:47:50',
+        time: getFormattedTime22(),
         battery: 68,
         signal: 20
     },
     pointB: {
-        imei: 861261027107081,
+        imei: 861261027105820,
         lat: '28.617921794551414',
         lng: '77.36426542751408',
-        speed: 40,
-        time: '2024/10/04 11:47:50',
+        speed: 30,
+        time: getFormattedTime22(),
         battery: 68,
         signal: 20
     },
     pointC: {
-        imei: 861261027107081,
+        imei: 861261027105820,
         lat: '28.61807248449627',
         lng: '77.35506008613771',
-        speed: 40,
-        time: '2024/10/04 11:47:50',
+        speed: 50,
+        time: getFormattedTime22(),
         battery: 68,
         signal: 20
     },
     indus: {
-        imei: 861261027107081,
+        imei: 861261027105820,
         lat: '28.618769422675815',
         lng: '77.35506008614057',
-        speed: 40,
-        time: '2024/10/04 11:47:50',
+        speed: 10,
+        time: getFormattedTime22(),
         battery: 68,
         signal: 20
     }
@@ -643,3 +664,46 @@ app.get('/api/route/indusToMan', async (req, res) => {
 app.get('/simulator', (req, res) => {
     res.render('simulator');
 });
+
+
+//#region Version Update
+
+app.put('/putVersionUpdate', async (req, res) => {
+    const newVersion = new Version({
+        minRequiredVersion: req.body.minRequiredVersion
+    });
+
+    try {
+        const savedVersion = await newVersion.save();
+        // console.log('New version updated:', savedVersion);
+        return res.status(201).json({msg: "New version update set successfully!", success: true});
+    } catch (error) {
+        // console.error('Error updating new version:', error);
+        return res.status(500).json({error: "Version couldn't be updated to DB due to internal connection error", success: false});
+    }
+})
+
+app.get('/getVersionUpdate', async (req, res) => {
+    try {
+        const latestVersion = await Version.findOne().sort({ _id: -1 }).exec();
+
+        if (!latestVersion) {
+            return res.status(404).json({ msg: "No version data found", success: false });
+        }
+
+        // console.log('Fetched version:', latestVersion);
+        return res.status(200).json({ 
+            minRequiredVersion: latestVersion.minRequiredVersion, 
+            success: true 
+        });
+    } catch (error) {
+        // console.error('Error fetching version:', error);
+        return res.status(500).json({ 
+            error: "Couldn't fetch version data due to an internal error", 
+            success: false 
+        });
+    }
+});
+
+
+//#endregion
