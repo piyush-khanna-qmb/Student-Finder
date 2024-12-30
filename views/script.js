@@ -1422,40 +1422,37 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function animateMarker(marker, startLocation, endLocation, duration) {
-  console.log(startLocation.lat());
-  console.log(endLocation.lat());
-  
-  const frames = 60; // Number of frames for animation
-  let currentFrame = 0;
-  
-  // Calculate the change in position per frame
-  const deltaLat = (Number(endLocation.lat()) - Number(startLocation.lat())) / frames;
-  const deltaLng = (Number(endLocation.lng()) - Number(startLocation.lng())) / frames;
-  
-  // Calculate delay between frames based on duration
-  const interval = duration / frames;
+    let startTime = null;
 
-  const animate = () => {
-      if (currentFrame >= frames) return;
+    // Linear interpolation between start and end locations
+    function lerp(start, end, t) {
+        return start + (end - start) * t;
+    }
 
-      currentFrame++;
-      
-      // Calculate current position
-      const lat = startLocation.lat() + (deltaLat * currentFrame);
-      const lng = startLocation.lng() + (deltaLng * currentFrame);
-      
-      // Update marker position
-      marker.setPosition(new google.maps.LatLng(lat, lng));
-      console.log(lat, lng);
-      
-      
-      // Schedule next frame
-      setTimeout(animate, interval);
-  };
+    // The animation function
+    function animationStep(timestamp) {
+        if (!startTime) startTime = timestamp;
 
-  // Start animation
-  animate();
+        const progress = Math.min((timestamp - startTime) / duration, 1); // Ensure progress doesn't go beyond 1
+
+        // Calculate the new latitude and longitude for the marker
+        const newLat = lerp(startLocation.lat(), endLocation.lat(), progress);
+        const newLng = lerp(startLocation.lng(), endLocation.lng(), progress);
+
+        const newPosition = new google.maps.LatLng(newLat, newLng);
+        marker.setPosition(newPosition); // Update the marker's position on the map
+
+        if (progress < 1) {
+            // Continue animating if progress hasn't reached 1 (100%)
+            requestAnimationFrame(animationStep);
+        }
+    }
+
+    // Start the animation
+    requestAnimationFrame(animationStep);
 }
+
+
 var addRow = document.getElementById('addFieldButton');
 
 addRow.addEventListener('click', () => {
